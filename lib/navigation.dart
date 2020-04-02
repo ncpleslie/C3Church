@@ -34,6 +34,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
   }
 
   Widget _getPage(model) {
+    // Stack and offstage used to ensure pages load correctly and don't reload of page change
     return Stack(
       children: <Offstage>[
         Offstage(

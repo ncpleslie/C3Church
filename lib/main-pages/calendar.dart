@@ -16,98 +16,57 @@ class CalendarPage extends StatefulWidget {
 
 class _CalendarPageState extends State<CalendarPage> {
   final GlobalKey<ScaffoldState> _calendarScaffoldKey =
-      new GlobalKey<ScaffoldState>();
-  bool error = false;
+      GlobalKey<ScaffoldState>();
+  List<CalendarEvent> _calendarEvents;
+  MainModel _model;
+  Future _calendarFuture;
 
   @override
   void initState() {
-    _loadingTimeOut();
+    // _loadingTimeOut();
     super.initState();
-    MainModel _model = ScopedModel.of(context);
-    _preloadData(_model);
+    _model = ScopedModel.of(context);
+    _calendarFuture = _model.getCalendarEvents();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _calendarScaffoldKey,
-      backgroundColor: Theme.of(context).backgroundColor,
-      body: SafeArea(
-        top: true,
-        child: _buildStreamBuilder(),
-      ),
-    );
-  }
-
-  Widget _buildStreamBuilder() {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        return StreamBuilder<List<CalendarEvent>>(
-          stream: model.getEventsList,
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.hasData) {
-              final content = snapshot.data
-                  .map<Widget>((CalendarEvent data) =>
-                      CalendarEvents(data, _calendarScaffoldKey, model))
-                  .toList();
-              return snapshot.data.isNotEmpty
-                  ? ListView(children: content)
-                  : _buildError(
-                      model: model, errorString: 'No Events To Display');
-            } else if (snapshot.hasError) {
-              return _buildError(model: model, errorString: 'Error Loading...');
-            } else if (!snapshot.hasData) {
-              _preloadData(model);
-              return Center(child: CircularProgressIndicator());
-            }
-          },
+        _model = model;
+        return Scaffold(
+          key: _calendarScaffoldKey,
+          backgroundColor: Theme.of(context).backgroundColor,
+          body: SafeArea(top: true, child: _buildFutureListView(context)),
         );
       },
     );
   }
 
-  bool _loopPrevent = true;
-  void _preloadData(MainModel model) async {
-    if (_loopPrevent) {
-      _loopPrevent = false;
-      await model.getCalendarEvents();
-    }
+  Widget _buildFutureListView(BuildContext context) {
+    return FutureBuilder<List<CalendarEvent>>(
+      future: _calendarFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          _calendarEvents = snapshot.data;
+          return _buildListView();
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        } else if (_calendarEvents == null) {
+          return Text("No Events");
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
   }
 
-  void _loadingTimeOut() {
-    Future<void>.delayed(Duration(seconds: 5), () {
-      error = true;
-      if (this.mounted) {
-        setState(() {});
-      }
-    });
-  }
-
-  Widget _buildError({MainModel model, String errorString}) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          IconButton(
-            icon: Icon(Icons.refresh),
-            color: Colors.white,
-            onPressed: () {
-              if (mounted) {
-                error = false;
-                model.getCalendarEvents();
-                if (this.mounted) {
-                  setState(() {});
-                  model.outsideLoading(true);
-                }
-              }
-            },
-          ),
-          Text(
-            errorString,
-            style: TextStyle(color: Colors.white),
-          )
-        ],
-      ),
+  ListView _buildListView() {
+    return ListView.builder(
+      itemCount: _calendarEvents != null ? _calendarEvents.length : 0,
+      itemBuilder: (BuildContext context, int index) {
+        return CalendarEvents(
+            _calendarEvents[index], _calendarScaffoldKey, _model);
+      },
     );
   }
 }

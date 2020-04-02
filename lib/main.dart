@@ -19,6 +19,7 @@ class ChurchApp extends StatefulWidget {
 }
 
 class _ChurchAppState extends State<ChurchApp> {
+  // MAIN THEME DATA
   ThemeData _theme = ThemeData(
     brightness: Brightness.light,
     primaryColor: Color(0xFF232F34),

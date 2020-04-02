@@ -5,6 +5,7 @@ import 'package:scoped_model/scoped_model.dart';
 import '../scoped-model/main.dart';
 import '../widgets/service_card.dart';
 import '../widgets/secondary_card.dart';
+import '../widgets/location_card.dart';
 import 'location.dart';
 
 class HomePage extends StatelessWidget {
@@ -52,7 +53,7 @@ class HomePage extends StatelessWidget {
           primaryTitle: 'Get In Touch',
           secondaryTitle: 'Lots of ways to reach us',
           subtitle: 'Find out how',
-          contentWidget: LocationPage().buildLocationCard(context, model),
+          contentWidget: LocationCard(model),
           model: model,
         ),
         SizedBox(

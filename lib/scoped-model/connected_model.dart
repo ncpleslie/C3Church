@@ -41,118 +41,84 @@ mixin ConnectedModel on Model {
   BuildContext context;
 }
 
+// --------------------------------------------------------------------- //
 mixin PodcastModel on ConnectedModel {
-  Stream<List> get getPodcastList => _listOfFormattedPodcasts.stream;
-  final _listOfFormattedPodcasts = BehaviorSubject<List<Podcasts>>();
-
-  List<Podcasts> _podcasts = <Podcasts>[];
-
-  Future<Null> getPodcasts() async {
+  final String _podcastURL = 'https://c3churchchch.podbean.com/feed.xml';
+  int maxNum = 10;
+  Future<List<Podcast>> getPodcasts() async {
     print('Fetching Podcasts');
     _startFunction();
-    final podcasts = await _fetchPodcasts();
-    final List formattedPodcasts = await _convertPodcastData(podcasts);
-    final podcastListObject = await _addPodcastsToObject(formattedPodcasts);
-    _podcasts = podcastListObject;
-    _listOfFormattedPodcasts.add(_podcasts);
+    final xmlOfPodcasts = await _fetchPodcasts();
+    final json = _convertXMLtoJSON(xmlOfPodcasts);
+    Iterable list = json['rss']['channel']['item'];
     _endFunction();
+    return list
+        .map((podcast) => Podcast.fromJson(podcast))
+        .take(maxNum)
+        .toList();
   }
 
-  _fetchPodcasts() async {
+  Future<http.Response> _fetchPodcasts() async {
     _isLoading.add(true);
     notifyListeners();
-    final String _url = 'https://c3churchchch.podbean.com/feed.xml';
-    final http.Response response = await http.get(_url);
+    final String url = _podcastURL;
+    final http.Response response = await http.get(url);
     if (response.statusCode == 200) {
       return response;
+    } else {
+      throw Exception("Failed to load podcasts");
     }
   }
 
-  _convertPodcastData(http.Response response) {
+  dynamic _convertXMLtoJSON(http.Response response) {
     final Xml2Json xml2json = Xml2Json();
     xml2json.parse(response.body);
     final String jsonData = xml2json.toParker();
-    final List listOfPodcasts = json.decode(jsonData)['rss']['channel']['item'];
-    return listOfPodcasts;
-  }
-
-  _getEastsidePodcasts(listOfPodcasts) {
-    final List listOfEastsidePodcasts = [];
-    for (int i = 0; i <= listOfPodcasts.length - 1; i++) {
-      var podcastCheck =
-          listOfPodcasts[i]['itunes:summary'].contains('EASTSIDE');
-      if (podcastCheck) {
-        listOfEastsidePodcasts.add(listOfPodcasts[i]);
-      }
-    }
-    return listOfEastsidePodcasts;
-  }
-
-  _addPodcastsToObject(listOfEastsidePodcasts) {
-    Podcasts podcasts;
-    List<Podcasts> podcastList = [];
-    int count = 0;
-    int maxNumOfPodcasts = 10;
-    for (var podcastData in listOfEastsidePodcasts) {
-      if (count == maxNumOfPodcasts) break;
-      count++;
-      podcasts = Podcasts(
-          title: podcastData['title'],
-          date: podcastData['pubDate']
-              .substring(0, podcastData['pubDate'].length - 15),
-          summary: podcastData['itunes:summary'],
-          link: podcastData['link']);
-      podcastList.add(podcasts);
-    }
-    return podcastList;
+    return json.decode(jsonData);
   }
 }
 
+// --------------------------------------------------------------------- //
 mixin CalendarModel on ConnectedModel {
-  Stream<List<CalendarEvent>> get getEventsList => _listOfCalendarEvents.stream;
-  final _listOfCalendarEvents = BehaviorSubject<List<CalendarEvent>>();
-
-  List<CalendarEvent> _calendar = <CalendarEvent>[];
-
   final _scopes = const [CalendarApi.CalendarEventsReadonlyScope];
-  Location newZealand;
+  Location _location;
   String pageToken;
+  int maxResults = 30;
+  String orderBy = 'startTime';
 
-  Future<Null> getCalendarEvents() async {
+  Future<List<CalendarEvent>> getCalendarEvents() async {
     print('Fetching Calendar Events');
     _startFunction();
-    final calendarEvents = await initCalendarFetch();
-    final allCalendarEvents = await _convertCalendarEvents(calendarEvents);
-    _calendar = allCalendarEvents;
-    _listOfCalendarEvents.add(_calendar);
+    final calendarEvents = await _fetchCalenderEvents();
     _endFunction();
+    return _convertCalendarEvents(calendarEvents);
   }
 
-  Future<Events> initCalendarFetch() async {
-    Future<Events> calEvents;
+  Future<Events> _fetchCalenderEvents() async {
+    Future<Events> events;
     // Set Timezone to NZ (only location this app will work)
     await loadDefaultData().then((rawData) => _getLocation(rawData));
     // Fetch Calendar Data
     await clientViaServiceAccount(credentials, _scopes).then((client) {
       CalendarApi calendar = CalendarApi(client);
-      calEvents = calendar.events.list(calendarEmailAddress,
-          orderBy: 'startTime',
+      events = calendar.events.list(calendarEmailAddress,
+          orderBy: orderBy,
           singleEvents: true,
-          maxResults: 30,
+          maxResults: maxResults,
           pageToken: pageToken);
     });
-    return calEvents;
+    return events;
   }
 
-  Future<List<CalendarEvent>> _convertCalendarEvents(Events calEvents) async {
+  List<CalendarEvent> _convertCalendarEvents(Events event) {
     CalendarEvent calendarEvents;
     List<CalendarEvent> _fetchedEvents = <CalendarEvent>[];
-    pageToken = calEvents.nextPageToken;
-    for (Event event in calEvents.items) {
+    pageToken = event.nextPageToken;
+    for (Event event in event.items) {
       calendarEvents = CalendarEvent(
           eventTitle: event.summary,
-          startTime: TZDateTime.from(event.start.dateTime, newZealand),
-          endTime: TZDateTime.from(event.end.dateTime, newZealand),
+          startTime: TZDateTime.from(event.start.dateTime, _location),
+          endTime: TZDateTime.from(event.end.dateTime, _location),
           summary: event.description,
           location: event.location);
       _fetchedEvents.add(calendarEvents);
@@ -166,12 +132,13 @@ mixin CalendarModel on ConnectedModel {
     return byteData.buffer.asUint8List();
   }
 
-  _getLocation(rawData) {
+  _getLocation(List<int> rawData) {
     initializeDatabase(rawData);
-    newZealand = getLocation('Pacific/Auckland');
+    _location = getLocation('Pacific/Auckland');
   }
 }
 
+// --------------------------------------------------------------------- //
 mixin UrlLauncher on ConnectedModel {
   loadMaps(BuildContext context) async {
     final double lat = -43.5029809;
@@ -217,6 +184,7 @@ mixin UrlLauncher on ConnectedModel {
   }
 }
 
+// --------------------------------------------------------------------- //
 mixin Notifications on ConnectedModel {
   initNotifications() {
     OneSignal.shared.init(

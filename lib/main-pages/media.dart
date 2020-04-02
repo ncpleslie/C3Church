@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
@@ -13,49 +15,54 @@ class MediaPage extends StatefulWidget {
 }
 
 class _MediaPageState extends State<MediaPage> {
+  List<Podcast> _podcasts;
+  MainModel _model;
+  Future _podcastFuture;
+
   @override
   void initState() {
     super.initState();
-    MainModel _model = ScopedModel.of(context);
-    _preloadData(_model);
+    _model = ScopedModel.of(context);
+    _podcastFuture = _model.getPodcasts();
   }
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
+        _model = model;
         return Scaffold(
           backgroundColor: Theme.of(context).backgroundColor,
           body: SafeArea(
             top: true,
-            child: StreamBuilder(
-              stream: model.getPodcastList,
-              builder: (BuildContext context, AsyncSnapshot snapshot) {
-                if (snapshot.hasData) {
-                  return ListView(
-                      children: snapshot.data
-                          .map<Widget>(
-                              (Podcasts data) => PodcastTile(data, model))
-                          .toList());
-                } else {
-                  _preloadData(model);
-                  return Center(
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
-            ),
+            child: _buildFutureListView(context),
           ),
         );
       },
     );
   }
 
-  bool _loopPrevent = true;
-  void _preloadData(MainModel model) async {
-    if (_loopPrevent) {
-      _loopPrevent = false;
-      await model.getPodcasts();
-    }
+  ListView _buildListView() {
+    return ListView.builder(
+      itemCount: _podcasts != null ? _podcasts.length : 0,
+      itemBuilder: (BuildContext context, int index) {
+        return PodcastTile(_podcasts[index], _model);
+      },
+    );
+  }
+
+  Widget _buildFutureListView(BuildContext context) {
+    return FutureBuilder<List<Podcast>>(
+      future: _podcastFuture,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.hasData) {
+          _podcasts = snapshot.data;
+          return _buildListView();
+        } else if (snapshot.hasError) {
+          return Text("${snapshot.error}");
+        }
+        return Center(child: CircularProgressIndicator());
+      },
+    );
   }
 }

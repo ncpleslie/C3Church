@@ -6,7 +6,7 @@ import '../scoped-model/main.dart';
 
 class PodcastTile extends StatelessWidget {
   final MainModel model;
-  final Podcasts data;
+  final Podcast data;
   PodcastTile(this.data, this.model);
 
   @override

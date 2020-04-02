@@ -1,7 +1,13 @@
-import 'package:flutter/material.dart';
+// Calendar events are used in the calendar tab
+// Events are pulled from Google Calendar API
 
 class CalendarEvent {
-  CalendarEvent({@required this.eventTitle, @required this.startTime, @required this.endTime, @required this.summary, this.location});
+  CalendarEvent(
+      {this.eventTitle,
+      this.startTime,
+      this.endTime,
+      this.summary,
+      this.location});
 
   final String eventTitle;
   final DateTime startTime;
