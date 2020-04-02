@@ -101,7 +101,7 @@ mixin CalendarModel on ConnectedModel {
     // Fetch Calendar Data
     await clientViaServiceAccount(credentials, _scopes).then((client) {
       CalendarApi calendar = CalendarApi(client);
-      events = calendar.events.list(calendarEmailAddress,
+      events = calendar.events.list(CALENDAR_EMAIL_ADDRESS,
           orderBy: orderBy,
           singleEvents: true,
           maxResults: maxResults,
@@ -186,10 +186,15 @@ mixin UrlLauncher on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin Notifications on ConnectedModel {
+  // CHANGE THIS parameter to true if you want to test GDPR privacy consent
+  bool _requireConsent = true;
+  var settings = {
+    OSiOSSettings.autoPrompt: false,
+    OSiOSSettings.promptBeforeOpeningPushUrl: true
+  };
   initNotifications() {
-    OneSignal.shared.init(
-      oneSignalAppId,
-    );
+    OneSignal.shared.setRequiresUserPrivacyConsent(_requireConsent);
+    OneSignal.shared.init(ONE_SIGNAL_APP_IP);
     OneSignal.shared
         .setInFocusDisplayType(OSNotificationDisplayType.notification);
   }

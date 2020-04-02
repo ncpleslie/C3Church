@@ -14,7 +14,7 @@ class SettingsPage extends StatelessWidget {
             backgroundColor: Theme.of(context).backgroundColor,
             elevation: 0,
             title: Text(
-              'Settings',
+              'About',
               style: Theme.of(context).textTheme.headline6,
             ),
             centerTitle: true,
@@ -23,26 +23,6 @@ class SettingsPage extends StatelessWidget {
           backgroundColor: Theme.of(context).backgroundColor,
           body: ListView(
             children: <Widget>[
-              ListTile(
-                leading: Icon(
-                  Icons.notifications,
-                  color: Theme.of(context).accentColor,
-                ),
-                title: Text(
-                  'Toggle Notifications',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                subtitle: Text(
-                  'Toggle whether you want notifications or not',
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-                trailing: Switch.adaptive(
-                  value: model.notificationStatus,
-                  onChanged: (_) => model.toggleNotifications(),
-                  activeTrackColor: Theme.of(context).accentColor,
-                  activeColor: Theme.of(context).accentColor,
-                ),
-              ),
               ListTile(
                 leading: Icon(
                   MdiIcons.church,
@@ -59,34 +39,6 @@ class SettingsPage extends StatelessWidget {
               ),
               ListTile(
                 leading: Icon(
-                  Icons.announcement,
-                  color: Theme.of(context).accentColor,
-                ),
-                title: Text(
-                  'Enquries',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                subtitle: Text(
-                  'For enquries, please contact C3 Eastside (See contact page)',
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-              ),
-              ListTile(
-                leading: Icon(
-                  Icons.copyright,
-                  color: Theme.of(context).accentColor,
-                ),
-                title: Text(
-                  'More Infomation On This App',
-                  style: Theme.of(context).textTheme.headline6,
-                ),
-                subtitle: Text(
-                  'For more information on this app please contact the developer at ncpleslie.github.io',
-                  style: Theme.of(context).textTheme.subtitle2,
-                ),
-              ),
-              ListTile(
-                leading: Icon(
                   Icons.lock,
                   color: Theme.of(context).accentColor,
                 ),
@@ -95,7 +47,7 @@ class SettingsPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 subtitle: Text(
-                  'C3 Church Eastside and App Developer (NCPLeslie) do not collect personal information. No data is stored by us (C3 Eastside and App Developer). This app does/will make connections to external services for retrieval of relevant data (Podcasts (Podbean), Calendar Events (Google Calendar), Notifications (Google Firestore), Push Notifications (OneSignal)). These services may collect your data. Google, Podbean, and OneSignal have no connection with C3 Eastside or the App Developer.',
+                  'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, OneSignal, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.',
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),
