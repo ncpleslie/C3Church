@@ -14,6 +14,7 @@ import 'package:timezone/standalone.dart';
 import 'package:timezone/src/env.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
+import 'package:intl/intl.dart';
 
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
@@ -117,6 +118,12 @@ mixin CalendarModel on ConnectedModel {
     List<CalendarEvent> _fetchedEvents = <CalendarEvent>[];
     pageToken = event.nextPageToken;
     for (Event event in event.items) {
+      // Ensure events that are displayed havent already passed
+      TZDateTime eventEndTime = TZDateTime.from(event.end.dateTime, _location);
+      TZDateTime now = TZDateTime.now(_location);
+      if (eventEndTime.isBefore(now)) continue;
+
+      // Add events to list. This list is used to populate a ListView
       calendarEvents = CalendarEvent(
           eventTitle: event.summary,
           startTime: TZDateTime.from(event.start.dateTime, _location),

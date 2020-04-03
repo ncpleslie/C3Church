@@ -6,6 +6,7 @@ import 'package:scoped_model/scoped_model.dart';
 import '../widgets/calendar_events.dart';
 import '../models/calendar_events.dart';
 import '../scoped-model/main.dart';
+import '../widgets/nothing_loaded_card.dart';
 
 class CalendarPage extends StatefulWidget {
   @override
@@ -49,15 +50,23 @@ class _CalendarPageState extends State<CalendarPage> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           _calendarEvents = snapshot.data;
+          if (_calendarEvents == null || _calendarEvents.length == 0) {
+            return NothingLoadedCard(
+                title: "No Events",
+                subtitle: "It seems like there are no upcoming events",
+                callback: _refresh);
+          }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
-        } else if (_calendarEvents == null) {
-          return Text("No Events");
-        }
-        return Center(child: CircularProgressIndicator());
+          return Text("Error: ${snapshot.error}");
+        } else
+          return Center(child: CircularProgressIndicator());
       },
     );
+  }
+
+  void _refresh() {
+    print("Refreshing");
   }
 
   ListView _buildListView() {

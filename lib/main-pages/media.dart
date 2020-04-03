@@ -6,6 +6,7 @@ import 'package:scoped_model/scoped_model.dart';
 import '../scoped-model/main.dart';
 import '../models/podcasts.dart';
 import '../widgets/podcast_tile.dart';
+import '../widgets/nothing_loaded_card.dart';
 
 class MediaPage extends StatefulWidget {
   @override
@@ -57,6 +58,12 @@ class _MediaPageState extends State<MediaPage> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
           _podcasts = snapshot.data;
+          if (_podcasts == null || _podcasts.length == 0) {
+            return NothingLoadedCard(
+                title: "No Podcasts",
+                subtitle: "It seems like there are no podcasts. Strange...",
+                callback: _refresh);
+          }
           return _buildListView();
         } else if (snapshot.hasError) {
           return Text("${snapshot.error}");
@@ -64,5 +71,9 @@ class _MediaPageState extends State<MediaPage> {
         return Center(child: CircularProgressIndicator());
       },
     );
+  }
+
+  void _refresh() {
+    print("Refreshing");
   }
 }
