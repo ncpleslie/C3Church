@@ -1,4 +1,4 @@
-const String APP_NAME = "Eastside C3 Church";
+const String APP_NAME = "Eastside C3";
 
 // Bottom navigation names
 const String PAGE_TWO = 'Calender';
@@ -35,7 +35,7 @@ const String APPLE_MAP_URL = 'https://maps.apple.com/?sll=$LAT,$LON';
 
 // Misc App information
 const String PRIVACY_POLICY =
-    'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, OneSignal, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.';
+    'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, Firebase, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.';
 
 // Misc images
 const String SERVICE_IMG_URL = 'https://via.placeholder.com/2000x1500';

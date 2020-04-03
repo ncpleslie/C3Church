@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:fancy_bottom_navigation/fancy_bottom_navigation.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 import './main-pages/calendar.dart';
 import './main-pages/location.dart';
@@ -10,6 +11,7 @@ import './main-pages/home.dart';
 import './main-pages/media.dart';
 import './scoped-model/main.dart';
 import './globals/app_data.dart';
+import './widgets/notification_card.dart';
 
 class Navigation extends StatefulWidget {
   @override
@@ -20,21 +22,23 @@ class Navigation extends StatefulWidget {
 
 class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
   int _currentIndex = 0;
+  String _newPage;
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
+        _subscribeToNotifications(model);
         model.context = context;
         return Scaffold(
-          body: _getPage(model),
+          body: _getPage(),
           bottomNavigationBar: _createBottomNavBar(),
         );
       },
     );
   }
 
-  Widget _getPage(model) {
+  Widget _getPage() {
     // Stack and offstage used to ensure pages load correctly and don't reload of page change
     return Stack(
       children: <Offstage>[
@@ -77,5 +81,40 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
         });
       },
     );
+  }
+
+  void _outAppNotification(String newPage) {
+    _newPage = newPage;
+    _changePage();
+  }
+
+  void _showInAppNotification(
+      String title, String message, String newPage, int length) {
+    _newPage = newPage;
+    showOverlayNotification((context) {
+      return NotificationCard(
+          context: context,
+          title: title,
+          message: message,
+          callback: _changePage);
+    }, duration: Duration(milliseconds: length));
+  }
+
+  int pageTypeToInt(String newPage) {
+    if (newPage.trim().toLowerCase() == "event") return 1;
+    if (newPage.trim().toLowerCase() == "podcast") return 2;
+    return 0;
+  }
+
+  void _changePage() {
+    int newPage = pageTypeToInt(_newPage);
+    if (_currentIndex == newPage) return;
+    setState(() {
+      _currentIndex = newPage;
+    });
+  }
+
+  void _subscribeToNotifications(MainModel model) {
+    model.initialiseNotifications(_showInAppNotification, _outAppNotification);
   }
 }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'package:scoped_model/scoped_model.dart';
 
 import '../scoped-model/main.dart';
@@ -43,7 +42,6 @@ class HomePage extends StatelessWidget {
       backgroundColor: Theme.of(context).backgroundColor,
       body: ScopedModelDescendant(
         builder: (BuildContext context, Widget child, MainModel model) {
-          _subscribeToNotifications(model);
           return _buildList(model, context);
         },
       ),
@@ -72,9 +70,5 @@ class HomePage extends StatelessWidget {
       ],
       physics: const AlwaysScrollableScrollPhysics(),
     );
-  }
-
-  _subscribeToNotifications(MainModel model) {
-    model.initNotifications();
   }
 }

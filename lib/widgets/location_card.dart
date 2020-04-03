@@ -28,6 +28,10 @@ class LocationCard extends StatelessWidget {
                 scale: 2,
               ),
             ),
+            _socialRow(model),
+            Divider(
+              color: Theme.of(context).accentColor,
+            ),
             ListTile(
               title: Text(
                 ADDRESS,
@@ -54,7 +58,9 @@ class LocationCard extends StatelessWidget {
                 ),
               ),
             ),
-            _socialRow(model),
+            Divider(
+              color: Theme.of(context).accentColor,
+            ),
             _buttonRow(model),
           ],
         ),

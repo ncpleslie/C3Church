@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/podcasts.dart';
 import '../scoped-model/main.dart';
-import '../globals/app_data.dart';
 
 class PodcastTile extends StatelessWidget {
   final MainModel model;
@@ -22,18 +22,27 @@ class PodcastTile extends StatelessWidget {
             child: _buildPodcastTile(),
           ),
           Positioned(
-              top: 15.0,
-              left: 15.0,
-              child: Container(
-                height: 50.0,
-                width: 50.0,
-                decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    image: DecorationImage(
-                      fit: BoxFit.fill,
-                      image: ExactAssetImage(PODCAST_IMG_URL),
-                    )),
-              ))
+            top: 15.0,
+            left: 15.0,
+            child: Container(
+              height: 50.0,
+              width: 50.0,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(25.0),
+                child: CachedNetworkImage(
+                  placeholder: (context, url) => Center(
+                    child: CircularProgressIndicator(),
+                  ),
+                  errorWidget: (context, url, error) => Center(
+                    child: Center(
+                      child: Icon(Icons.error),
+                    ),
+                  ),
+                  imageUrl: data.image,
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );

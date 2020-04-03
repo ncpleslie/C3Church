@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "63721051614",
+    "firebase_url": "https://eastside-c3.firebaseio.com",
+    "project_id": "eastside-c3",
+    "storage_bucket": "eastside-c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:63721051614:android:c96134737625b88c97794f",
+        "android_client_info": {
+          "package_name": "com.example.C3ChurchEastside"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "63721051614-k57h7jji31hef1cme2fl8jhlocs0furi.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCF8iyCoeEimpQ9fe2wzA3wBHSeV0dLlVo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "63721051614-k57h7jji31hef1cme2fl8jhlocs0furi.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

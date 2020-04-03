@@ -47,4 +47,3 @@ lib/globals/globals.dart
 .metadata
 pubspec.lock
 ios/
-android/

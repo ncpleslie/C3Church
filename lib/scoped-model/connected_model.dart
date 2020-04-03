@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
@@ -12,7 +14,6 @@ import 'package:timezone/standalone.dart';
 import 'package:timezone/src/env.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:onesignalflutter/onesignalflutter.dart';
 
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
@@ -49,8 +50,8 @@ mixin PodcastModel on ConnectedModel {
   Future<List<Podcast>> getPodcasts() async {
     print('Fetching Podcasts');
     _startFunction();
-    final xmlOfPodcasts = await _fetchPodcasts();
-    final json = _convertXMLtoJSON(xmlOfPodcasts);
+    final http.Response response = await _fetchPodcasts();
+    final json = _convertXMLtoJSON(response.body);
     Iterable list = json['rss']['channel']['item'];
     _endFunction();
     return list
@@ -71,11 +72,11 @@ mixin PodcastModel on ConnectedModel {
     }
   }
 
-  dynamic _convertXMLtoJSON(http.Response response) {
+  dynamic _convertXMLtoJSON(String body) {
     final Xml2Json xml2json = Xml2Json();
-    xml2json.parse(response.body);
-    final String jsonData = xml2json.toParker();
-    return json.decode(jsonData);
+    xml2json.parse(body);
+    final String jsonData = xml2json.toBadgerfish();
+    return jsonDecode(jsonData);
   }
 }
 
@@ -175,31 +176,44 @@ mixin UrlLauncher on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin Notifications on ConnectedModel {
-  // CHANGE THIS parameter to true if you want to test GDPR privacy consent
-  bool _requireConsent = true;
-  var settings = {
-    OSiOSSettings.autoPrompt: false,
-    OSiOSSettings.promptBeforeOpeningPushUrl: true
-  };
-  initNotifications() {
-    OneSignal.shared.setRequiresUserPrivacyConsent(_requireConsent);
-    OneSignal.shared.init(ONE_SIGNAL_APP_IP);
-    OneSignal.shared
-        .setInFocusDisplayType(OSNotificationDisplayType.notification);
-  }
+  final FirebaseMessaging _fcm = FirebaseMessaging();
 
-  bool _notificationsAllowed = true;
+  Future initialiseNotifications(
+      Function activateInAppCallback, Function activateOutAppCallback) async {
+    if (Platform.isIOS) {
+      _fcm.requestNotificationPermissions(IosNotificationSettings());
+    }
 
-  bool get notificationStatus {
-    return _notificationsAllowed;
-  }
-
-  toggleNotifications() {
-    // TODO TIE TO BACK NOTIFICATION SYSTEM
-    _notificationsAllowed
-        ? _notificationsAllowed = false
-        : _notificationsAllowed = true;
-    notifyListeners();
-    print(notificationStatus);
+    _fcm.configure(
+      // Called when the app is open and notification recieved
+      onMessage: (Map<String, dynamic> message) async {
+        String notificationTitle = message['notification']['title'] != null
+            ? message['notification']['title']
+            : "Error loading notification title";
+        String notificationBody = message['notification']['body'] != null
+            ? message['notification']['body']
+            : "Error loading notification message";
+        String newPage = message['data']['type'] != null
+            ? message['data']['type']
+            : "noPage";
+        int notificationLength = message['data']['length'] != null
+            ? int.tryParse(message['data']['length']) * 1000 ?? 5000
+            : 5000;
+        activateInAppCallback(
+            notificationTitle, notificationBody, newPage, notificationLength);
+      },
+      // Called when the app not in memory/not running and is opened with the notification
+      onLaunch: (Map<String, dynamic> message) async {
+        String newPage =
+            message['data']['type'] != null ? message['data']['type'] : null;
+        activateOutAppCallback(newPage);
+      },
+      // Called when the app is open, via notification, when running in background
+      onResume: (Map<String, dynamic> message) async {
+        String newPage =
+            message['data']['type'] != null ? message['data']['type'] : null;
+        activateOutAppCallback(newPage);
+      },
+    );
   }
 }
