@@ -42,7 +42,8 @@ app.*.map.json
 # Exceptions to above rules.
 !/packages/flutter_tools/test/data/dart_dependencies_test/**/.packages
 
-lib/globals/
+lib/globals/churchapp-2a503d5743b8.json
+lib/globals/globals.dart
 .metadata
 pubspec.lock
 ios/

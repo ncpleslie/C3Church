@@ -3,6 +3,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:scoped_model/scoped_model.dart';
 
 import '../scoped-model/main.dart';
+import '../globals/app_data.dart';
 
 class SettingsPage extends StatelessWidget {
   @override
@@ -33,7 +34,7 @@ class SettingsPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 subtitle: Text(
-                  'C3 Church\nEastside, Christchurch\nNew Zealand',
+                  CREATED_FOR,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),
@@ -47,7 +48,7 @@ class SettingsPage extends StatelessWidget {
                   style: Theme.of(context).textTheme.headline6,
                 ),
                 subtitle: Text(
-                  'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, OneSignal, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.',
+                  PRIVACY_POLICY,
                   style: Theme.of(context).textTheme.subtitle2,
                 ),
               ),

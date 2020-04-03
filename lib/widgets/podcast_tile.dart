@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 import '../models/podcasts.dart';
 import '../scoped-model/main.dart';
+import '../globals/app_data.dart';
 
 class PodcastTile extends StatelessWidget {
   final MainModel model;
@@ -31,7 +31,7 @@ class PodcastTile extends StatelessWidget {
                     shape: BoxShape.circle,
                     image: DecorationImage(
                       fit: BoxFit.fill,
-                      image: ExactAssetImage('assets/itunes-thumb.jpg'),
+                      image: ExactAssetImage(PODCAST_IMG_URL),
                     )),
               ))
         ],
@@ -83,19 +83,11 @@ class PodcastTile extends StatelessWidget {
                   iconSize: 30.0,
                   icon: Icon(Icons.play_circle_outline),
                   color: Theme.of(model.context).primaryColor,
-                  onPressed: () => _buildWebView(data.link),
+                  onPressed: () => model.website(website: data.link),
                 ),
               ),
             ]),
       ),
     );
-  }
-
-  _buildWebView(String link) async {
-    if (await canLaunch(link)) {
-      await launch(link);
-    } else {
-      throw 'Could not launch $link';
-    }
   }
 }

@@ -8,6 +8,8 @@ import './secondary-pages/services.dart';
 import './scoped-model/main.dart';
 import './main-pages/settings.dart';
 import './main-pages/location.dart';
+import './themes/style.dart';
+import './globals/app_data.dart';
 
 void main() => runApp(ChurchApp());
 
@@ -19,38 +21,13 @@ class ChurchApp extends StatefulWidget {
 }
 
 class _ChurchAppState extends State<ChurchApp> {
-  // MAIN THEME DATA
-  ThemeData _theme = ThemeData(
-    brightness: Brightness.light,
-    primaryColor: Color(0xFF232F34),
-    bottomAppBarColor: Color(0xFF344955),
-    accentColor: Color(0xFFF9AA33),
-    backgroundColor: Color(0xFFefefef),
-    cardColor: Colors.white,
-    iconTheme: IconThemeData(color: Color(0xFF232F34)),
-    fontFamily: 'WorkSansSubtitle',
-    textTheme: TextTheme(
-      headline5: TextStyle(
-          color: Colors.white,
-          fontWeight: FontWeight.w100,
-          fontFamily: 'WorkSansHeadline'),
-      headline6: TextStyle(
-          color: Color(0xFF232F34),
-          fontWeight: FontWeight.w600,
-          fontSize: 26.0,
-          fontFamily: 'WorkSansTitle'),
-      subtitle2:
-          TextStyle(color: Color(0xFF4A6572), fontFamily: 'WorkSansSubtitle'),
-    ),
-  );
-
   @override
   Widget build(BuildContext context) {
     return ScopedModel<MainModel>(
       model: MainModel(),
       child: MaterialApp(
-        title: 'C3 CHURCH',
-        theme: _theme,
+        title: APP_NAME,
+        theme: themeData,
         routes: <String, WidgetBuilder>{
           '/': (BuildContext context) => Navigation(),
           'service': (BuildContext context) => ServicesPage(),

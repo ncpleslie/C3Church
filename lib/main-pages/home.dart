@@ -6,20 +6,30 @@ import '../scoped-model/main.dart';
 import '../widgets/service_card.dart';
 import '../widgets/secondary_card.dart';
 import '../widgets/location_card.dart';
-import 'location.dart';
+import '../themes/style.dart';
+import '../globals/app_data.dart';
 
 class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          'C3 EASTSIDE',
-          style: Theme.of(context).textTheme.headline6,
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            appLogo,
+            SizedBox(
+              width: 10,
+            ),
+            Text(
+              APP_NAME,
+              style: Theme.of(context).textTheme.headline6,
+            ),
+          ],
         ),
         centerTitle: true,
         backgroundColor: Theme.of(context).cardColor,
-        elevation: 1,
+        elevation: 0,
         actions: <Widget>[
           IconButton(
             icon: Icon(
@@ -41,7 +51,7 @@ class HomePage extends StatelessWidget {
   }
 
   final List<String> _imageURLs = [
-    'https://via.placeholder.com/2000x1500',
+    GET_IN_TOUCH_IMG_URL,
   ];
 
   Widget _buildList(MainModel model, BuildContext context) {

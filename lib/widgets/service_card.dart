@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 
 import '../scoped-model/main.dart';
+import '../globals/app_data.dart';
 
 class ServiceCard extends StatelessWidget {
   final MainModel model;
@@ -33,16 +34,19 @@ class ServiceCard extends StatelessWidget {
                   children: <Widget>[
                     Positioned(
                       width: MediaQuery.of(context).size.width,
-                      child: CachedNetworkImage(
-                        placeholder: (context, url) => Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                        errorWidget: (context, url, error) => Center(
-                          child: Center(
-                            child: Icon(Icons.error),
+                      child: Hero(
+                        tag: 'services',
+                        child: CachedNetworkImage(
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(),
                           ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Center(
+                              child: Icon(Icons.error),
+                            ),
+                          ),
+                          imageUrl: SERVICE_IMG_URL,
                         ),
-                        imageUrl: 'https://via.placeholder.com/2000x1500',
                       ),
                     ),
                     Positioned(
@@ -59,11 +63,11 @@ class ServiceCard extends StatelessWidget {
             ),
             ListTile(
               title: Text(
-                'Sunday: 10AM & 7PM',
+                TIME_OF_SERVICE,
                 style: Theme.of(model.context).textTheme.headline6,
               ),
               subtitle: Text(
-                '269 Hills Road, Mairehau',
+                ADDRESS,
                 style: Theme.of(model.context).textTheme.subtitle2,
               ),
               trailing: Container(

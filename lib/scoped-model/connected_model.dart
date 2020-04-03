@@ -17,6 +17,7 @@ import 'package:onesignalflutter/onesignalflutter.dart';
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
 import '../globals/globals.dart';
+import '../globals/app_data.dart';
 
 mixin ConnectedModel on Model {
   // Loading Relevant Stuff
@@ -43,7 +44,7 @@ mixin ConnectedModel on Model {
 
 // --------------------------------------------------------------------- //
 mixin PodcastModel on ConnectedModel {
-  final String _podcastURL = 'https://c3churchchch.podbean.com/feed.xml';
+  final String _podcastURL = PODCAST;
   int maxNum = 10;
   Future<List<Podcast>> getPodcasts() async {
     print('Fetching Podcasts');
@@ -141,45 +142,33 @@ mixin CalendarModel on ConnectedModel {
 // --------------------------------------------------------------------- //
 mixin UrlLauncher on ConnectedModel {
   loadMaps(BuildContext context) async {
-    final double lat = -43.5029809;
-    final double lon = 172.649236;
-    String mapUrl = 'https://goo.gl/maps/YdgaWWT8NCo';
-    String appleUrl = 'https://maps.apple.com/?sll=$lat,$lon';
+    String mapUrl = GOOGLE_MAP_URL;
+    String appleUrl = APPLE_MAP_URL;
     if (Theme.of(context).platform == TargetPlatform.iOS) {
       mapUrl = appleUrl;
     }
-    if (await canLaunch(mapUrl)) {
-      print('launching $mapUrl');
-      await launch(mapUrl);
-    } else {
-      throw 'Could not launch maps';
-    }
+    _launch(mapUrl);
   }
 
   call() async {
-    final String tel = 'tel:+6433850170';
-    if (await canLaunch(tel)) {
-      launch(tel);
-    } else {
-      throw 'Error loading phone';
-    }
+    final String tel = 'tel:' + PHONE_NUMBER;
+    _launch(tel);
   }
 
   email() async {
-    final String email = 'mailto:office@c3chch.org';
-    if (await canLaunch(email)) {
-      launch(email);
-    } else {
-      throw 'Error loading email';
-    }
+    final String email = 'mailto:' + EMAIL;
+    _launch(email);
   }
 
-  website() async {
-    final String website = 'http://c3chch.org';
-    if (await canLaunch(website)) {
-      launch(website);
+  website({String website = WEBSITE}) async {
+    _launch(website);
+  }
+
+  _launch(String link) async {
+    if (await canLaunch(link)) {
+      launch(link);
     } else {
-      throw 'Error loading website';
+      throw 'Error launching';
     }
   }
 }

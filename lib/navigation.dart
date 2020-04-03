@@ -9,6 +9,7 @@ import './main-pages/location.dart';
 import './main-pages/home.dart';
 import './main-pages/media.dart';
 import './scoped-model/main.dart';
+import './globals/app_data.dart';
 
 class Navigation extends StatefulWidget {
   @override
@@ -65,10 +66,10 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
       activeIconColor: Theme.of(context).primaryColor,
       textColor: Theme.of(context).cardColor,
       tabs: <TabData>[
-        TabData(iconData: Icons.home, title: 'C3 Eastside'),
-        TabData(iconData: MdiIcons.calendarMultiselect, title: 'Calender'),
-        TabData(iconData: Icons.play_circle_outline, title: 'Sermons'),
-        TabData(iconData: Icons.location_on, title: 'Find Us'),
+        TabData(iconData: Icons.home, title: APP_NAME),
+        TabData(iconData: MdiIcons.calendarMultiselect, title: PAGE_TWO),
+        TabData(iconData: Icons.play_circle_outline, title: PAGE_THREE),
+        TabData(iconData: Icons.location_on, title: PAGE_FOUR),
       ],
       onTabChangedListener: (int position) {
         setState(() {

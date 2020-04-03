@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../scoped-model/main.dart';
+import '../globals/app_data.dart';
 
 class LocationCard extends StatelessWidget {
   final MainModel model;
@@ -22,17 +24,17 @@ class LocationCard extends StatelessWidget {
             Card(
               elevation: 0,
               child: Image.asset(
-                'assets/placeholder.png',
+                LOCATION_IMG_URL,
                 scale: 2,
               ),
             ),
             ListTile(
               title: Text(
-                '269 Hills Road, Mairehau',
+                ADDRESS,
                 style: Theme.of(context).textTheme.headline6,
               ),
               subtitle: Text(
-                'Sunday: 10AM & 7PM',
+                TIME_OF_SERVICE,
                 style: Theme.of(context).textTheme.subtitle2,
               ),
               trailing: Container(
@@ -52,7 +54,8 @@ class LocationCard extends StatelessWidget {
                 ),
               ),
             ),
-            _buttonRow(model)
+            _socialRow(model),
+            _buttonRow(model),
           ],
         ),
       ),
@@ -62,7 +65,7 @@ class LocationCard extends StatelessWidget {
   Widget _buttonRow(MainModel model) {
     return ListTile(
       title: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: <Widget>[
           _buildButton(model,
               icon: Icons.phone, title: 'Call', onPress: model.call),
@@ -75,10 +78,35 @@ class LocationCard extends StatelessWidget {
     );
   }
 
-  Widget _buildButton(MainModel model, {IconData icon, String title, onPress}) {
+  Widget _socialRow(MainModel model) {
+    return ListTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          _buildButton(model,
+              icon: MdiIcons.facebook,
+              title: '',
+              onPress: () => model.website(website: FACEBOOK)),
+          _buildButton(model,
+              icon: MdiIcons.twitter,
+              title: '',
+              onPress: () => model.website(website: TWITTER)),
+          _buildButton(model,
+              icon: MdiIcons.instagram,
+              title: '',
+              onPress: () => model.website(website: INSTAGRAM))
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(MainModel model,
+      {IconData icon, String title, Function onPress}) {
     return RaisedButton(
       elevation: 0,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+      shape: title.length == 0
+          ? CircleBorder()
+          : RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
       color: Theme.of(model.context).accentColor,
       textColor: Theme.of(model.context).primaryColor,
       child: Row(

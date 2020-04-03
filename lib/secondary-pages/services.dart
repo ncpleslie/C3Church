@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../scoped-model/main.dart';
+import '../globals/app_data.dart';
 
 class ServicesPage extends StatelessWidget {
   @override
@@ -23,12 +25,6 @@ class ServicesPage extends StatelessWidget {
   }
 
   Widget _buildBody(context) {
-    String address = "269 Hills Road \nMairehau, Christchurch";
-    String timeOfService = "Every Sunday at 10am & 7pm";
-    String messageOne =
-        "WELCOME\nIf you're new, you're not alone! There are new people who join our church each week. We think this is a great family to be part of and we hope that you feel right at home.  Here are the some great ways to get involved at church";
-    String messageTwo =
-        "WHAT TO EXPECT ON SUNDAY\nAnyone and everyone is welcome at our Sunday services! There is no dress code --just wear whatever you feel comfortable in. We have kids programmes for ages 0-12 yr olds. The style of worship is modern and upbeat and one of our pastors will share a 30 minute message from the Bible. Stay afterwards for a cuppa and meet some new people.";
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         return ListView(
@@ -42,7 +38,20 @@ class ServicesPage extends StatelessWidget {
               color: Theme.of(context).cardColor,
               child: Column(
                 children: <Widget>[
-                  Image.asset('assets/service.png'),
+                  Hero(
+                    tag: 'services',
+                    child: CachedNetworkImage(
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Center(
+                          child: Icon(Icons.error),
+                        ),
+                      ),
+                      imageUrl: SERVICE_IMG_URL,
+                    ),
+                  ),
                   ListTile(
                     title: Column(
                       children: <Widget>[
@@ -55,7 +64,7 @@ class ServicesPage extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: <Widget>[
                               Text(
-                                address,
+                                ADDRESS,
                                 style: Theme.of(context).textTheme.headline6,
                               ),
                               _locationIcon(model)
@@ -67,21 +76,21 @@ class ServicesPage extends StatelessWidget {
                           color: Theme.of(context).accentColor,
                         ),
                         Text(
-                          timeOfService,
+                          TIME_OF_SERVICE,
                           style: Theme.of(context).textTheme.subtitle2,
                         ),
                         Divider(
                           color: Theme.of(context).accentColor,
                         ),
                         Text(
-                          messageOne,
+                          SERVICE_MESSAGE_ONE,
                           style: Theme.of(context).textTheme.subtitle2,
                         ),
                         Divider(
                           color: Theme.of(context).accentColor,
                         ),
                         Text(
-                          messageTwo,
+                          SERVICE_MESSAGE_TWO,
                           style: Theme.of(context).textTheme.subtitle2,
                         ),
                       ],
