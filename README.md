@@ -5,7 +5,6 @@
 - [x] Android notifications
 - [ ] iOS notifications
 - [ ] Change notification icon - Android
-- [ ] Access CMS for blog posts
 - [ ] Create ListView on blog posts on home screen
 - [ ] Create better privacy policy
 - [x] Prevent past calendar events from showing
@@ -13,3 +12,9 @@
 - [ ] Refresh events/podcasts on tap or pulldown
 - [x] Add splash screen - Android
 - [ ] Add splash screen - iOS
+- [ ] Livestream videos with notification /w own tab
+- [ ] Integrate YouTube channel
+- [ ] Facebook API Access
+- [ ] Migrate from Google Calendars to Facebook events
+- [ ] Facebook blog/posts on front page
+- [ ] Infoodle email tab

@@ -18,6 +18,7 @@ import 'package:intl/intl.dart';
 
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
+import '../models/posts.dart';
 import '../globals/globals.dart';
 import '../globals/app_data.dart';
 
@@ -41,6 +42,17 @@ mixin ConnectedModel on Model {
     notifyListeners();
   }
 
+  Future<http.Response> _fetch(String url) async {
+    _isLoading.add(true);
+    notifyListeners();
+    final http.Response response = await http.get(url);
+    if (response.statusCode == 200) {
+      return response;
+    } else {
+      throw Exception("Failed to load data");
+    }
+  }
+
   BuildContext context;
 }
 
@@ -51,7 +63,7 @@ mixin PodcastModel on ConnectedModel {
   Future<List<Podcast>> getPodcasts() async {
     print('Fetching Podcasts');
     _startFunction();
-    final http.Response response = await _fetchPodcasts();
+    final http.Response response = await _fetch(_podcastURL);
     final json = _convertXMLtoJSON(response.body);
     Iterable list = json['rss']['channel']['item'];
     _endFunction();
@@ -59,18 +71,6 @@ mixin PodcastModel on ConnectedModel {
         .map((podcast) => Podcast.fromJson(podcast))
         .take(maxNum)
         .toList();
-  }
-
-  Future<http.Response> _fetchPodcasts() async {
-    _isLoading.add(true);
-    notifyListeners();
-    final String url = _podcastURL;
-    final http.Response response = await http.get(url);
-    if (response.statusCode == 200) {
-      return response;
-    } else {
-      throw Exception("Failed to load podcasts");
-    }
   }
 
   dynamic _convertXMLtoJSON(String body) {
@@ -83,57 +83,42 @@ mixin PodcastModel on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin CalendarModel on ConnectedModel {
-  final _scopes = const [CalendarApi.CalendarEventsReadonlyScope];
   Location _location;
   String pageToken;
   int maxResults = 30;
   String orderBy = 'startTime';
 
-  Future<List<CalendarEvent>> getCalendarEvents() async {
-    print('Fetching Calendar Events');
-    _startFunction();
-    final calendarEvents = await _fetchCalenderEvents();
-    _endFunction();
-    return _convertCalendarEvents(calendarEvents);
-  }
+  final String _eventUrl =
+      FACEBOOK_EVENT_URL + "&access_token=" + FACEBOOK_ACCESS_TOKEN;
 
-  Future<Events> _fetchCalenderEvents() async {
-    Future<Events> events;
-    // Set Timezone to NZ (only location this app will work)
-    await loadDefaultData().then((rawData) => _getLocation(rawData));
-    // Fetch Calendar Data
-    await clientViaServiceAccount(credentials, _scopes).then((client) {
-      CalendarApi calendar = CalendarApi(client);
-      events = calendar.events.list(CALENDAR_EMAIL_ADDRESS,
-          orderBy: orderBy,
-          singleEvents: true,
-          maxResults: maxResults,
-          pageToken: pageToken);
-    });
-    return events;
-  }
-
-  List<CalendarEvent> _convertCalendarEvents(Events event) {
-    CalendarEvent calendarEvents;
-    List<CalendarEvent> _fetchedEvents = <CalendarEvent>[];
-    pageToken = event.nextPageToken;
-    for (Event event in event.items) {
-      // Ensure events that are displayed havent already passed
-      TZDateTime eventEndTime = TZDateTime.from(event.end.dateTime, _location);
-      TZDateTime now = TZDateTime.now(_location);
-      if (eventEndTime.isBefore(now)) continue;
-
-      // Add events to list. This list is used to populate a ListView
-      calendarEvents = CalendarEvent(
-          eventTitle: event.summary,
-          startTime: TZDateTime.from(event.start.dateTime, _location),
-          endTime: TZDateTime.from(event.end.dateTime, _location),
-          summary: event.description,
-          location: event.location);
-      _fetchedEvents.add(calendarEvents);
+  Future<List<dynamic>> getEvents() async {
+    try {
+      print('Fetching Calendar Events');
+      _startFunction();
+      // Set Timezone to NZ (only location this app will work)
+      await loadDefaultData().then((rawData) => _getLocation(rawData));
+      final http.Response response = await _fetch(_eventUrl);
+      Iterable json = jsonDecode(response.body)['events']['data'];
+      _endFunction();
+      return json
+          .map((event) => CalendarEvent.fromJson(event, _location))
+          .toList();
+    } catch (e, stack) {
+      throw "There was an error: $e \n $stack";
     }
-    return _fetchedEvents;
   }
+
+  // Iterable _filterPastEvents(Iterable json) {
+  //   TZDateTime now;
+  //   TZDateTime eventStartTime;
+  //   return json.where((json) {
+  //     now = TZDateTime.now(_location);
+  //     eventStartTime = json['start_time'] != null
+  //         ? TZDateTime.from(DateTime.parse(json['start_time']), _location)
+  //         : TZDateTime.from(DateTime.now(), _location);
+  //     return eventStartTime.isBefore(now);
+  //   });
+  // }
 
 // Time Zone setting (New Zealand)
   Future<List<int>> loadDefaultData() async {
@@ -144,6 +129,22 @@ mixin CalendarModel on ConnectedModel {
   _getLocation(List<int> rawData) {
     initializeDatabase(rawData);
     _location = getLocation('Pacific/Auckland');
+  }
+}
+
+// --------------------------------------------------------------------- //
+mixin PostModel on ConnectedModel {
+  final String _postUrl =
+      FACEBOOK_POST_URL + "&access_token=" + FACEBOOK_ACCESS_TOKEN;
+
+  Future<List<dynamic>> getPosts() async {
+    print('Fetching Facebook Posts');
+    _startFunction();
+    final http.Response response = await _fetch(_postUrl);
+    _endFunction();
+    return jsonDecode(response.body)['posts']['data']
+        .map((post) => Post.fromJson(post))
+        .toList();
   }
 }
 

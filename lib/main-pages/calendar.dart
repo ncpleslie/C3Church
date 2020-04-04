@@ -18,16 +18,15 @@ class CalendarPage extends StatefulWidget {
 class _CalendarPageState extends State<CalendarPage> {
   final GlobalKey<ScaffoldState> _calendarScaffoldKey =
       GlobalKey<ScaffoldState>();
-  List<CalendarEvent> _calendarEvents;
+  List<dynamic> _events;
   MainModel _model;
   Future _calendarFuture;
 
   @override
   void initState() {
-    // _loadingTimeOut();
     super.initState();
     _model = ScopedModel.of(context);
-    _calendarFuture = _model.getCalendarEvents();
+    _calendarFuture = _model.getEvents();
   }
 
   @override
@@ -45,12 +44,12 @@ class _CalendarPageState extends State<CalendarPage> {
   }
 
   Widget _buildFutureListView(BuildContext context) {
-    return FutureBuilder<List<CalendarEvent>>(
+    return FutureBuilder<List<dynamic>>(
       future: _calendarFuture,
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          _calendarEvents = snapshot.data;
-          if (_calendarEvents == null || _calendarEvents.length == 0) {
+          _events = snapshot.data;
+          if (_events == null || _events.length == 0) {
             return NothingLoadedCard(
                 title: "No Events",
                 subtitle: "It seems like there are no upcoming events",
@@ -58,7 +57,7 @@ class _CalendarPageState extends State<CalendarPage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Text("Error: ${snapshot.error}");
+          return Text("Error from calendar: ${snapshot.error}");
         } else
           return Center(child: CircularProgressIndicator());
       },
@@ -71,10 +70,9 @@ class _CalendarPageState extends State<CalendarPage> {
 
   ListView _buildListView() {
     return ListView.builder(
-      itemCount: _calendarEvents != null ? _calendarEvents.length : 0,
+      itemCount: _events != null ? _events.length : 0,
       itemBuilder: (BuildContext context, int index) {
-        return CalendarEvents(
-            _calendarEvents[index], _calendarScaffoldKey, _model);
+        return CalendarEvents(_events[index], _calendarScaffoldKey, _model);
       },
     );
   }

@@ -42,3 +42,13 @@ const String SERVICE_IMG_URL = 'https://via.placeholder.com/2000x1500';
 const String GET_IN_TOUCH_IMG_URL = 'https://via.placeholder.com/2000x1500';
 const String LOCATION_IMG_URL = 'assets/placeholder.png';
 const String PODCAST_IMG_URL = 'assets/itunes-thumb.jpg';
+
+// Facebook Graph API url
+
+const String FACEBOOK_URL =
+    "https://graph.facebook.com/v6.0/eastsidec3?fields=";
+
+const String FACEBOOK_POST_URL =
+    FACEBOOK_URL + 'posts{created_time,full_picture,id,message}';
+
+const String FACEBOOK_EVENT_URL = FACEBOOK_URL + "events";
