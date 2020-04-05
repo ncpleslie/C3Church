@@ -15,6 +15,7 @@
 - [ ] Livestream videos with notification /w own tab
 - [ ] Integrate YouTube channel
 - [ ] Facebook API Access
-- [ ] Migrate from Google Calendars to Facebook events
-- [ ] Facebook blog/posts on front page
+- [x] Migrate from Google Calendars to Facebook events
+- [x] Facebook blog/posts on front page
+- [ ] Style blog posts
 - [ ] Infoodle email tab

@@ -1,4 +1,4 @@
-package com.example.C3ChurchEastside
+package org.c3chch.C3ChurchEastside
 
 import io.flutter.embedding.android.FlutterActivity
 
