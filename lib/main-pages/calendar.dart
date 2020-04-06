@@ -21,12 +21,13 @@ class _CalendarPageState extends State<CalendarPage> {
   List<dynamic> _events;
   MainModel _model;
   Future _calendarFuture;
+  bool _loggedIn = false;
 
   @override
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    _calendarFuture = _model.getEvents();
+    if (_loggedIn) _calendarFuture = _model.getEvents();
   }
 
   @override
@@ -37,7 +38,14 @@ class _CalendarPageState extends State<CalendarPage> {
         return Scaffold(
           key: _calendarScaffoldKey,
           backgroundColor: Theme.of(context).backgroundColor,
-          body: SafeArea(top: true, child: _buildFutureListView(context)),
+          body: SafeArea(
+              top: true,
+              child: _loggedIn
+                  ? _buildFutureListView(context)
+                  : RaisedButton(
+                      onPressed: _initLoginProcess,
+                      child: Text("Login"),
+                    )),
         );
       },
     );
@@ -75,5 +83,16 @@ class _CalendarPageState extends State<CalendarPage> {
         return CalendarEvents(_events[index], _calendarScaffoldKey, _model);
       },
     );
+  }
+
+  void _initLoginProcess() {
+    setState(() {
+      _model.initialiseLogin().then((status) {
+        _loggedIn = status;
+        if (_loggedIn) {
+          _calendarFuture = _model.getEvents();
+        }
+      });
+    });
   }
 }

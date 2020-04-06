@@ -8,24 +8,26 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
 import 'package:rxdart/rxdart.dart';
-import 'package:googleapis/calendar/v3.dart';
-import 'package:googleapis_auth/auth_io.dart';
 import 'package:timezone/standalone.dart';
 import 'package:timezone/src/env.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:intl/intl.dart';
+import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'package:path/path.dart';
+import 'package:sqflite/sqflite.dart';
 
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
 import '../models/posts.dart';
 import '../globals/globals.dart';
 import '../globals/app_data.dart';
+import '../utils/utils.dart';
 
 mixin ConnectedModel on Model {
   // Loading Relevant Stuff
   final _isLoading = BehaviorSubject<bool>(seedValue: false);
   Stream<bool> get isLoading => _isLoading.stream;
+  FacebookAccessToken _accessToken;
 
   void outsideLoading(bool loading) {
     _isLoading.add(loading);
@@ -88,8 +90,7 @@ mixin CalendarModel on ConnectedModel {
   int maxResults = 30;
   String orderBy = 'startTime';
 
-  final String _eventUrl =
-      FACEBOOK_EVENT_URL + "&access_token=" + FACEBOOK_ACCESS_TOKEN;
+  final String _eventUrl = FACEBOOK_EVENT_URL + "&access_token=";
 
   Future<List<dynamic>> getEvents() async {
     try {
@@ -97,7 +98,8 @@ mixin CalendarModel on ConnectedModel {
       _startFunction();
       // Set Timezone to NZ (only location this app will work)
       await loadDefaultData().then((rawData) => _getLocation(rawData));
-      final http.Response response = await _fetch(_eventUrl);
+      final http.Response response =
+          await _fetch(_eventUrl + _accessToken.token);
       Iterable json = jsonDecode(response.body)['events']['data'];
       _endFunction();
       return json
@@ -107,18 +109,6 @@ mixin CalendarModel on ConnectedModel {
       throw "There was an error: $e \n $stack";
     }
   }
-
-  // Iterable _filterPastEvents(Iterable json) {
-  //   TZDateTime now;
-  //   TZDateTime eventStartTime;
-  //   return json.where((json) {
-  //     now = TZDateTime.now(_location);
-  //     eventStartTime = json['start_time'] != null
-  //         ? TZDateTime.from(DateTime.parse(json['start_time']), _location)
-  //         : TZDateTime.from(DateTime.now(), _location);
-  //     return eventStartTime.isBefore(now);
-  //   });
-  // }
 
 // Time Zone setting (New Zealand)
   Future<List<int>> loadDefaultData() async {
@@ -134,14 +124,21 @@ mixin CalendarModel on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin PostModel on ConnectedModel {
-  final String _postUrl =
-      FACEBOOK_POST_URL + "&access_token=" + FACEBOOK_ACCESS_TOKEN;
+  final String _postUrl = FACEBOOK_POST_URL + "&access_token=";
+
+  Future<FacebookAccessToken> isLoggedIn() async {
+    // Access device DB
+    // Get access token
+    final Future<Database> database =
+        openDatabase(join(await getDatabasesPath(), 'user.db'));
+  }
 
   Future<List<dynamic>> getPosts() async {
     print('Fetching Facebook Posts');
     _startFunction();
-    final http.Response response = await _fetch(_postUrl);
+    final http.Response response = await _fetch(_postUrl + _accessToken.token);
     _endFunction();
+    print(response.body);
     return jsonDecode(response.body)['posts']['data']
         .map((post) => Post.fromJson(post))
         .toList();
@@ -195,16 +192,18 @@ mixin Notifications on ConnectedModel {
     _fcm.configure(
       // Called when the app is open and notification recieved
       onMessage: (Map<String, dynamic> message) async {
-        String notificationTitle = message['notification']['title'] != null
-            ? message['notification']['title']
-            : "Error loading notification title";
-        String notificationBody = message['notification']['body'] != null
-            ? message['notification']['body']
-            : "Error loading notification message";
-        String newPage = message['data']['type'] != null
+        String notificationTitle =
+            isNullEmptyOrFalse(message['notification']['title'])
+                ? message['notification']['title']
+                : "Error loading notification title";
+        String notificationBody =
+            isNullEmptyOrFalse(message['notification']['body'])
+                ? message['notification']['body']
+                : "Error loading notification message";
+        String newPage = isNullEmptyOrFalse(message['data']['type'])
             ? message['data']['type']
             : "noPage";
-        int notificationLength = message['data']['length'] != null
+        int notificationLength = isNullEmptyOrFalse(message['data']['length'])
             ? int.tryParse(message['data']['length']) * 1000 ?? 5000
             : 5000;
         activateInAppCallback(
@@ -212,16 +211,45 @@ mixin Notifications on ConnectedModel {
       },
       // Called when the app not in memory/not running and is opened with the notification
       onLaunch: (Map<String, dynamic> message) async {
-        String newPage =
-            message['data']['type'] != null ? message['data']['type'] : null;
+        String newPage = isNullEmptyOrFalse(message['data']['type'])
+            ? message['data']['type']
+            : null;
         activateOutAppCallback(newPage);
       },
       // Called when the app is open, via notification, when running in background
       onResume: (Map<String, dynamic> message) async {
-        String newPage =
-            message['data']['type'] != null ? message['data']['type'] : null;
+        String newPage = isNullEmptyOrFalse(message['data']['type'])
+            ? message['data']['type']
+            : null;
         activateOutAppCallback(newPage);
       },
     );
+  }
+}
+
+// --------------------------------------------------------------------- //
+mixin Login on ConnectedModel {
+  final facebookLogin = FacebookLogin();
+
+  Future<bool> initialiseLogin() async {
+    _startFunction();
+    final result = await facebookLogin.logIn(['email']);
+
+    bool logInStatus = false;
+    switch (result.status) {
+      case FacebookLoginStatus.loggedIn:
+        _accessToken = result.accessToken;
+        print(_accessToken.token);
+        logInStatus = true;
+        break;
+      case FacebookLoginStatus.cancelledByUser:
+        print("Cancelled");
+        break;
+      case FacebookLoginStatus.error:
+        print(result.errorMessage);
+        break;
+    }
+    _endFunction();
+    return logInStatus;
   }
 }

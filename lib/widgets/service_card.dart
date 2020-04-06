@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -62,11 +63,11 @@ class ServiceCard extends StatelessWidget {
               ),
             ),
             ListTile(
-              title: Text(
+              title: AutoSizeText(
                 TIME_OF_SERVICE,
                 style: Theme.of(model.context).textTheme.headline6,
               ),
-              subtitle: Text(
+              subtitle: AutoSizeText(
                 ADDRESS,
                 style: Theme.of(model.context).textTheme.subtitle2,
               ),

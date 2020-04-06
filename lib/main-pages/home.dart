@@ -19,12 +19,13 @@ class _HomePageState extends State<HomePage> {
   List<dynamic> _posts;
   MainModel _model;
   Future _postFuture;
+  bool _loggedIn = false;
 
   @override
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    _postFuture = _model.getPosts();
+    if (_loggedIn) _postFuture = _model.getPosts();
   }
 
   @override
@@ -64,17 +65,18 @@ class _HomePageState extends State<HomePage> {
           return ListView(
             children: <Widget>[
               ServiceCard(_model),
-              _buildFutureListView(context)
+              _loggedIn
+                  ? _buildFutureListView(context)
+                  : RaisedButton(
+                      onPressed: _initLoginProcess,
+                      child: Text("Login"),
+                    )
             ],
           );
         },
       ),
     );
   }
-
-  final List<String> _imageURLs = [
-    GET_IN_TOUCH_IMG_URL,
-  ];
 
   ListView _buildListView() {
     return ListView.builder(
@@ -115,5 +117,16 @@ class _HomePageState extends State<HomePage> {
 
   void _refresh() {
     print("Refreshing");
+  }
+
+  void _initLoginProcess() {
+    setState(() {
+      _model.initialiseLogin().then((status) {
+        _loggedIn = status;
+        if (_loggedIn) {
+          _postFuture = _model.getPosts();
+        }
+      });
+    });
   }
 }

@@ -23,12 +23,14 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
   int _currentIndex = 0;
   String _newPage;
+  MainModel _model;
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
-        _subscribeToNotifications(model);
+        _model = model;
+        _subscribeToNotifications();
         model.context = context;
         return Scaffold(
           body: _getPage(),
@@ -114,7 +116,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
     });
   }
 
-  void _subscribeToNotifications(MainModel model) {
-    model.initialiseNotifications(_showInAppNotification, _outAppNotification);
+  void _subscribeToNotifications() {
+    _model.initialiseNotifications(_showInAppNotification, _outAppNotification);
   }
 }

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Eastside C3</string>
+    <string name="facebook_app_id">889295598168370</string>
+    <string name="fb_login_protocol_scheme">fb889295598168370</string>
+</resources>
+

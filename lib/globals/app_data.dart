@@ -6,7 +6,7 @@ const String PAGE_THREE = 'Sermons';
 const String PAGE_FOUR = 'Find us';
 
 // Information about the location, time of services, message, etc.
-const String ADDRESS = '269 Hills Road, Mairehau';
+const String ADDRESS = '269 Hills Road\nMairehau';
 const String TIME_OF_SERVICE = 'Sunday: 10AM & 6PM';
 
 const String SERVICE_MESSAGE_ONE =

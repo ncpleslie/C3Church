@@ -7,10 +7,10 @@ description: Eastside C3 Church located in Christchurch, New Zealand.
 # Both the version and the builder number may be overridden in flutter
 # build by specifying --build-name and --build-number, respectively.
 # Read more about versioning at semver.org.
-version: 0.5.1
+version: 0.5.5
 
 environment:
-  sdk: ">=2.0.0-dev.68.0 <3.0.0"
+  sdk: ">=2.8.0-dev.12.0 <3.0.0"
 
 dependencies:
   flutter:
@@ -26,8 +26,6 @@ dependencies:
   xml2json: ^3.0.3
   http: ^0.12.0+1
   rxdart: ^0.18.1
-  googleapis: ^0.53.0
-  googleapis_auth: any
   timezone: ^0.5.2
   add_2_calendar: ^1.4.0
   material_design_icons_flutter: ^4.0.5045
@@ -38,6 +36,9 @@ dependencies:
   cloud_firestore: ^0.12.9+5
   firebase_messaging: ^6.0.13
   overlay_support: ^1.0.3
+  flutter_facebook_login: ^3.0.0
+  sqflite:
+  path:
   
 dev_dependencies:
   flutter_launcher_icons: "^0.7.3"

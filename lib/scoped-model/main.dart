@@ -9,4 +9,5 @@ class MainModel extends Model
         CalendarModel,
         PostModel,
         UrlLauncher,
-        Notifications {}
+        Notifications,
+        Login {}
