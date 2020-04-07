@@ -1,8 +1,11 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../scoped-model/main.dart';
+import '../models/posts.dart';
 
 class PostCard extends StatelessWidget {
   final MainModel model;
@@ -23,9 +26,7 @@ class PostCard extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 5.0),
       child: InkWell(
-        onTap: () {
-          Navigator.pushNamed(context, 'service');
-        },
+        onTap: () => _loadRoute(context),
         child: Column(
           children: <Widget>[
             imgUrl != null
@@ -62,6 +63,8 @@ class PostCard extends StatelessWidget {
               subtitle: Text(
                 message,
                 style: Theme.of(model.context).textTheme.headline6,
+                maxLines: 4,
+                overflow: TextOverflow.ellipsis,
               ),
               trailing: Container(
                 margin: EdgeInsets.all(12.0),
@@ -72,11 +75,11 @@ class PostCard extends StatelessWidget {
                   padding: EdgeInsets.all(0.0),
                   alignment: Alignment.center,
                   icon: Icon(
-                    Icons.location_on,
+                    MdiIcons.arrowRightCircleOutline,
                     size: 30.0,
                     color: Theme.of(context).primaryColor,
                   ),
-                  onPressed: () => model.loadMaps(context),
+                  onPressed: () => _loadRoute(context),
                 ),
               ),
             ),
@@ -84,5 +87,15 @@ class PostCard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void _loadRoute(BuildContext context) {
+    Navigator.pushNamed(context, 'posts',
+        arguments: Post(
+          id: id,
+          picture: imgUrl,
+          message: message,
+          createdTime: createdTime,
+        ));
   }
 }

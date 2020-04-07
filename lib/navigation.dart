@@ -119,4 +119,15 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
   void _subscribeToNotifications() {
     _model.initialiseNotifications(_showInAppNotification, _outAppNotification);
   }
+
+  bool _loggedIn = false;
+  Future<bool> _autoLoginProcess() async {
+    _loggedIn = false;
+    setState(() {
+      _model.tryAutoLogin().then((_) {
+        _loggedIn = _model.isLoggedIn;
+      });
+    });
+    return _loggedIn;
+  }
 }

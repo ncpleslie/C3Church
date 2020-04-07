@@ -6,6 +6,7 @@ import 'package:scoped_model/scoped_model.dart';
 
 import './navigation.dart';
 import './secondary-pages/services.dart';
+import './secondary-pages/posts.dart';
 import './scoped-model/main.dart';
 import './main-pages/settings.dart';
 import './main-pages/location.dart';
@@ -34,7 +35,8 @@ class _ChurchAppState extends State<ChurchApp> {
             '/': (BuildContext context) => Navigation(),
             'service': (BuildContext context) => ServicesPage(),
             'settings': (BuildContext context) => SettingsPage(),
-            'location': (BuildContext context) => LocationPage()
+            'location': (BuildContext context) => LocationPage(),
+            'posts': (BuildContext context) => PostPage(),
           },
           onGenerateRoute: (RouteSettings settings) {
             return CupertinoPageRoute<bool>(

@@ -27,6 +27,8 @@ mixin ConnectedModel on Model {
   final _isLoading = BehaviorSubject<bool>(seedValue: false);
   Stream<bool> get isLoading => _isLoading.stream;
 
+  Location _location;
+
   FacebookUser _user;
 
   String get token {
@@ -101,6 +103,17 @@ mixin ConnectedModel on Model {
   }
 
   BuildContext context;
+
+  // Time Zone setting (New Zealand)
+  Future<List<int>> loadDefaultData() async {
+    var byteData = await rootBundle.load('assets/2018i_2010-2020.tzf');
+    return byteData.buffer.asUint8List();
+  }
+
+  _getLocation(List<int> rawData) {
+    initializeDatabase(rawData);
+    _location = getLocation('Pacific/Auckland');
+  }
 }
 
 // --------------------------------------------------------------------- //
@@ -130,7 +143,6 @@ mixin PodcastModel on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin CalendarModel on ConnectedModel {
-  Location _location;
   String pageToken;
   int maxResults = 30;
   String orderBy = 'startTime';
@@ -153,17 +165,6 @@ mixin CalendarModel on ConnectedModel {
       throw "There was an error: $e \n $stack";
     }
   }
-
-// Time Zone setting (New Zealand)
-  Future<List<int>> loadDefaultData() async {
-    var byteData = await rootBundle.load('assets/2018i_2010-2020.tzf');
-    return byteData.buffer.asUint8List();
-  }
-
-  _getLocation(List<int> rawData) {
-    initializeDatabase(rawData);
-    _location = getLocation('Pacific/Auckland');
-  }
 }
 
 // --------------------------------------------------------------------- //
@@ -176,7 +177,7 @@ mixin PostModel on ConnectedModel {
     final http.Response response = await _fetch(_postUrl + token);
     _endFunction();
     return jsonDecode(response.body)['posts']['data']
-        .map((post) => Post.fromJson(post))
+        .map((post) => Post.fromJson(post, _location))
         .toList();
   }
 }

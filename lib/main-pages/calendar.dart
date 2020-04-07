@@ -86,6 +86,8 @@ class _CalendarPageState extends State<CalendarPage> {
 
   void _autoLoginProcess() {
     setState(() {
+      _calendarFuture = null;
+      _loggedIn = false;
       _model.tryAutoLogin().then((_) {
         _loggedIn = _model.isLoggedIn;
         if (_loggedIn) {
@@ -97,8 +99,10 @@ class _CalendarPageState extends State<CalendarPage> {
 
   void _initLoginProcess() {
     setState(() {
-      _model.login().then((status) {
-        _loggedIn = status;
+      _calendarFuture = null;
+      _loggedIn = false;
+      _model.login().then((_) {
+        _loggedIn = _model.isLoggedIn;
         if (_loggedIn) {
           _calendarFuture = _model.getEvents();
         }

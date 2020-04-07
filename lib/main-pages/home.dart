@@ -78,22 +78,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  ListView _buildListView() {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: ScrollPhysics(),
-      itemCount: _posts != null ? _posts.length : 0,
-      itemBuilder: (BuildContext context, int index) {
-        return PostCard(
-            model: _model,
-            id: _posts[index].id,
-            imgUrl: _posts[index].picture,
-            message: _posts[index].message,
-            createdTime: _posts[index].createdTime);
-      },
-    );
-  }
-
   Widget _buildFutureListView(BuildContext context) {
     return FutureBuilder<List<dynamic>>(
       future: _postFuture,
@@ -111,6 +95,25 @@ class _HomePageState extends State<HomePage> {
           return FacebookError(snapshot.error);
         }
         return Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  ListView _buildListView() {
+    return ListView.separated(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      separatorBuilder: (BuildContext context, int index) =>
+          Padding(padding: EdgeInsets.symmetric(vertical: 5)),
+      shrinkWrap: true,
+      physics: ScrollPhysics(),
+      itemCount: _posts != null ? _posts.length : 0,
+      itemBuilder: (BuildContext context, int index) {
+        return PostCard(
+            model: _model,
+            id: _posts[index].id,
+            imgUrl: _posts[index].picture,
+            message: _posts[index].message,
+            createdTime: _posts[index].createdTime);
       },
     );
   }
@@ -133,9 +136,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   void _initLoginProcess() {
+    _postFuture = null;
+    _loggedIn = false;
     setState(() {
-      _postFuture = null;
-      _loggedIn = false;
       _model.login().then((_) {
         _loggedIn = _model.isLoggedIn;
         if (_loggedIn) {

@@ -17,22 +17,24 @@ class LocationCard extends StatelessWidget {
       )),
       elevation: 0,
       color: Theme.of(context).cardColor,
-      child: InkWell(
-        onTap: () => model.loadMaps(context),
-        child: Column(
-          children: <Widget>[
-            Card(
-              elevation: 0,
-              child: Image.asset(
-                LOCATION_IMG_URL,
-                scale: 2,
-              ),
-            ),
-            _socialRow(model),
-            Divider(
-              color: Theme.of(context).accentColor,
-            ),
-            ListTile(
+      child: Column(
+        children: <Widget>[
+          InkWell(
+              onTap: () => model.loadMaps(context),
+              child: Card(
+                elevation: 0,
+                child: Image.asset(
+                  LOCATION_IMG_URL,
+                  scale: 2,
+                ),
+              )),
+          _buttonRow(model),
+          Divider(
+            color: Theme.of(context).accentColor,
+          ),
+          InkWell(
+            onTap: () => model.loadMaps(context),
+            child: ListTile(
               title: Text(
                 ADDRESS,
                 style: Theme.of(context).textTheme.headline6,
@@ -58,12 +60,12 @@ class LocationCard extends StatelessWidget {
                 ),
               ),
             ),
-            Divider(
-              color: Theme.of(context).accentColor,
-            ),
-            _buttonRow(model),
-          ],
-        ),
+          ),
+          Divider(
+            color: Theme.of(context).accentColor,
+          ),
+          _socialRow(context, model),
+        ],
       ),
     );
   }
@@ -84,7 +86,7 @@ class LocationCard extends StatelessWidget {
     );
   }
 
-  Widget _socialRow(MainModel model) {
+  Widget _socialRow(BuildContext context, MainModel model) {
     return ListTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -93,10 +95,20 @@ class LocationCard extends StatelessWidget {
               icon: MdiIcons.facebook,
               title: '',
               onPress: () => model.website(website: FACEBOOK)),
+          Container(
+            color: Theme.of(context).accentColor,
+            height: 30,
+            width: 0.5,
+          ),
           _buildButton(model,
               icon: MdiIcons.twitter,
               title: '',
               onPress: () => model.website(website: TWITTER)),
+          Container(
+            color: Theme.of(context).accentColor,
+            height: 30,
+            width: 0.5,
+          ),
           _buildButton(model,
               icon: MdiIcons.instagram,
               title: '',

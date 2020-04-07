@@ -1,3 +1,6 @@
+import 'package:intl/intl.dart';
+import 'package:timezone/standalone.dart';
+
 class Post {
   final String id;
   final String createdTime;
@@ -5,10 +8,12 @@ class Post {
   final String message;
   Post({this.id, this.createdTime, this.picture, this.message});
 
-  factory Post.fromJson(Map<String, dynamic> json) {
+  factory Post.fromJson(Map<String, dynamic> json, Location location) {
     final String id = json['id'] != null ? json['id'] : "NoID";
-    final String createdTime =
-        json['created_time'] != null ? json['created_time'] : "";
+    final String createdTime = json['created_time'] != null
+        ? DateFormat('kk:mm - dd-MM-yyyy').format(
+            TZDateTime.from(DateTime.parse(json['created_time']), location))
+        : "";
     final String picture =
         json['full_picture'] != null ? json['full_picture'] : null;
     final String message = json['message'] != null ? json['message'] : "";
