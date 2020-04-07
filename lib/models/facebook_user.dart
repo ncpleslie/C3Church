@@ -1,10 +1,27 @@
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
+import 'dart:convert';
 
 class FacebookUser {
-  final FacebookAccessToken accessToken;
-  FacebookUser(this.accessToken);
+  final String userId;
+  final String token;
+  final DateTime expiryDate;
+  FacebookUser({this.userId, this.token, this.expiryDate});
 
   Map<String, dynamic> toMap() {
-    return {'access_token': accessToken};
+    return {
+      'userId': userId,
+      'token': token,
+      'expiryDate': expiryDate.toIso8601String()
+    };
+  }
+
+  String toJson() {
+    return json.encode(this.toMap());
+  }
+
+  factory FacebookUser.fromJson(Map<String, dynamic> json) {
+    return FacebookUser(
+        userId: json['userId'],
+        token: json['token'],
+        expiryDate: DateTime.parse(json['expiryDate']));
   }
 }

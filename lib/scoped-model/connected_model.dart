@@ -13,13 +13,12 @@ import 'package:timezone/src/env.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
-import 'package:path/path.dart';
-import 'package:sqflite/sqflite.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/calendar_events.dart';
 import '../models/podcasts.dart';
 import '../models/posts.dart';
-import '../globals/globals.dart';
+import '../models/facebook_user.dart';
 import '../globals/app_data.dart';
 import '../utils/utils.dart';
 
@@ -27,11 +26,57 @@ mixin ConnectedModel on Model {
   // Loading Relevant Stuff
   final _isLoading = BehaviorSubject<bool>(seedValue: false);
   Stream<bool> get isLoading => _isLoading.stream;
-  FacebookAccessToken _accessToken;
 
-  void outsideLoading(bool loading) {
-    _isLoading.add(loading);
-    notifyListeners();
+  FacebookUser _user;
+
+  String get token {
+    if (_user != null) {
+      if (_user.expiryDate != null &&
+          _user.expiryDate.isAfter(DateTime.now()) &&
+          _user.token != null) {
+        return _user.token;
+      }
+      return null;
+    }
+    return null;
+  }
+
+  bool get isLoggedIn {
+    return token != null;
+  }
+
+  FacebookUser get user {
+    if (_user != null) {
+      return _user;
+    }
+    return null;
+  }
+
+  Future<void> _storePrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('userData', user.toJson());
+  }
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    _user = null;
+    _endFunction();
+  }
+
+  Future<bool> tryAutoLogin() async {
+    _startFunction();
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    }
+    final userData = prefs.getString('userData');
+    _user = FacebookUser.fromJson(json.decode(userData) as Map<String, Object>);
+    if (token == null) {
+      return false;
+    }
+    _endFunction();
+    return true;
   }
 
   void _startFunction() {
@@ -98,8 +143,7 @@ mixin CalendarModel on ConnectedModel {
       _startFunction();
       // Set Timezone to NZ (only location this app will work)
       await loadDefaultData().then((rawData) => _getLocation(rawData));
-      final http.Response response =
-          await _fetch(_eventUrl + _accessToken.token);
+      final http.Response response = await _fetch(_eventUrl + token);
       Iterable json = jsonDecode(response.body)['events']['data'];
       _endFunction();
       return json
@@ -126,19 +170,11 @@ mixin CalendarModel on ConnectedModel {
 mixin PostModel on ConnectedModel {
   final String _postUrl = FACEBOOK_POST_URL + "&access_token=";
 
-  Future<FacebookAccessToken> isLoggedIn() async {
-    // Access device DB
-    // Get access token
-    final Future<Database> database =
-        openDatabase(join(await getDatabasesPath(), 'user.db'));
-  }
-
   Future<List<dynamic>> getPosts() async {
     print('Fetching Facebook Posts');
     _startFunction();
-    final http.Response response = await _fetch(_postUrl + _accessToken.token);
+    final http.Response response = await _fetch(_postUrl + token);
     _endFunction();
-    print(response.body);
     return jsonDecode(response.body)['posts']['data']
         .map((post) => Post.fromJson(post))
         .toList();
@@ -228,28 +264,33 @@ mixin Notifications on ConnectedModel {
 }
 
 // --------------------------------------------------------------------- //
-mixin Login on ConnectedModel {
-  final facebookLogin = FacebookLogin();
+mixin Auth on ConnectedModel {
+  final _auth = FacebookLogin();
 
-  Future<bool> initialiseLogin() async {
+  Future login() async {
     _startFunction();
-    final result = await facebookLogin.logIn(['email']);
 
-    bool logInStatus = false;
-    switch (result.status) {
-      case FacebookLoginStatus.loggedIn:
-        _accessToken = result.accessToken;
-        print(_accessToken.token);
-        logInStatus = true;
-        break;
-      case FacebookLoginStatus.cancelledByUser:
-        print("Cancelled");
-        break;
-      case FacebookLoginStatus.error:
-        print(result.errorMessage);
-        break;
+    try {
+      final result = await _auth.logIn(['email']);
+
+      switch (result.status) {
+        case FacebookLoginStatus.loggedIn:
+          _user = FacebookUser(
+              userId: result.accessToken.userId,
+              token: result.accessToken.token,
+              expiryDate: result.accessToken.expires);
+          _storePrefs();
+          break;
+        case FacebookLoginStatus.cancelledByUser:
+          print("Cancelled");
+          break;
+        case FacebookLoginStatus.error:
+          print(result.errorMessage);
+          break;
+      }
+    } catch (error) {
+      throw error;
     }
     _endFunction();
-    return logInStatus;
   }
 }

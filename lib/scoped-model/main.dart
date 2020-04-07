@@ -10,4 +10,4 @@ class MainModel extends Model
         PostModel,
         UrlLauncher,
         Notifications,
-        Login {}
+        Auth {}

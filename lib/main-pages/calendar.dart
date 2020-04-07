@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../widgets/calendar_events.dart';
-import '../models/calendar_events.dart';
 import '../scoped-model/main.dart';
 import '../widgets/nothing_loaded_card.dart';
+import '../widgets/facebook_login_button.dart';
+import '../widgets/facebook_error.dart';
 
 class CalendarPage extends StatefulWidget {
   @override
@@ -27,7 +28,7 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    if (_loggedIn) _calendarFuture = _model.getEvents();
+    _autoLoginProcess();
   }
 
   @override
@@ -39,13 +40,11 @@ class _CalendarPageState extends State<CalendarPage> {
           key: _calendarScaffoldKey,
           backgroundColor: Theme.of(context).backgroundColor,
           body: SafeArea(
-              top: true,
-              child: _loggedIn
-                  ? _buildFutureListView(context)
-                  : RaisedButton(
-                      onPressed: _initLoginProcess,
-                      child: Text("Login"),
-                    )),
+            top: true,
+            child: _loggedIn
+                ? _buildFutureListView(context)
+                : FacebookLoginButton(_initLoginProcess),
+          ),
         );
       },
     );
@@ -65,7 +64,7 @@ class _CalendarPageState extends State<CalendarPage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Text("Error from calendar: ${snapshot.error}");
+          return FacebookError(snapshot.error);
         } else
           return Center(child: CircularProgressIndicator());
       },
@@ -85,9 +84,20 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
+  void _autoLoginProcess() {
+    setState(() {
+      _model.tryAutoLogin().then((_) {
+        _loggedIn = _model.isLoggedIn;
+        if (_loggedIn) {
+          _calendarFuture = _model.getEvents();
+        }
+      });
+    });
+  }
+
   void _initLoginProcess() {
     setState(() {
-      _model.initialiseLogin().then((status) {
+      _model.login().then((status) {
         _loggedIn = status;
         if (_loggedIn) {
           _calendarFuture = _model.getEvents();

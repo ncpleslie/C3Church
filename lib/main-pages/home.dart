@@ -7,6 +7,8 @@ import '../widgets/post_card.dart';
 import '../themes/style.dart';
 import '../globals/app_data.dart';
 import '../widgets/nothing_loaded_card.dart';
+import '../widgets/facebook_login_button.dart';
+import '../widgets/facebook_error.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -25,7 +27,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    if (_loggedIn) _postFuture = _model.getPosts();
+    _autoLoginProcess();
   }
 
   @override
@@ -54,7 +56,8 @@ class _HomePageState extends State<HomePage> {
               Icons.settings,
               color: Theme.of(context).primaryColor,
             ),
-            onPressed: () => Navigator.pushNamed(context, 'settings'),
+            onPressed: () => Navigator.pushNamed(context, 'settings')
+                .then((_) => _autoLoginProcess()),
           )
         ],
       ),
@@ -67,10 +70,7 @@ class _HomePageState extends State<HomePage> {
               ServiceCard(_model),
               _loggedIn
                   ? _buildFutureListView(context)
-                  : RaisedButton(
-                      onPressed: _initLoginProcess,
-                      child: Text("Login"),
-                    )
+                  : FacebookLoginButton(_initLoginProcess)
             ],
           );
         },
@@ -108,7 +108,7 @@ class _HomePageState extends State<HomePage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
+          return FacebookError(snapshot.error);
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -119,10 +119,25 @@ class _HomePageState extends State<HomePage> {
     print("Refreshing");
   }
 
+  void _autoLoginProcess() {
+    setState(() {
+      _postFuture = null;
+      _loggedIn = false;
+      _model.tryAutoLogin().then((_) {
+        _loggedIn = _model.isLoggedIn;
+        if (_loggedIn) {
+          _postFuture = _model.getPosts();
+        }
+      });
+    });
+  }
+
   void _initLoginProcess() {
     setState(() {
-      _model.initialiseLogin().then((status) {
-        _loggedIn = status;
+      _postFuture = null;
+      _loggedIn = false;
+      _model.login().then((_) {
+        _loggedIn = _model.isLoggedIn;
         if (_loggedIn) {
           _postFuture = _model.getPosts();
         }

@@ -14,10 +14,12 @@
 - [x] Migrate from Google Calendars to Facebook events
 - [x] Facebook blog/posts on front page
 - [ ] Style blog posts
-- [ ] Store access token
+- [x] Style Facebook Login button
+- [x] Store access token
 
 ## Later Sprints
 
+- [ ] Update Calendar events on logout
 - [ ] Refresh events/podcasts on tap or pulldown
 - [ ] Livestream videos with notification /w own tab
 - [ ] Integrate YouTube channel
