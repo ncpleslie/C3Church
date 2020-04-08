@@ -41,7 +41,7 @@ class _CalendarPageState extends State<CalendarPage> {
         _model = model;
         _model.isLoggedIn.listen(
           (data) {
-            if (data != _loggedIn) {
+            if (data != _loggedIn && mounted) {
               setState(() {
                 _loggedIn = data;
               });

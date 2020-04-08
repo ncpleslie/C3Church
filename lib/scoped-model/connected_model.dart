@@ -49,37 +49,6 @@ mixin ConnectedModel on Model {
     return null;
   }
 
-  Future<void> _storePrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('userData', _user.toJson());
-  }
-
-  Future<void> logout() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.clear();
-    _user = null;
-    _isLoggedIn.add(false);
-    _endFunction();
-  }
-
-  Future<bool> tryAutoLogin() async {
-    _startFunction();
-    final prefs = await SharedPreferences.getInstance();
-    if (!prefs.containsKey('userData')) {
-      _isLoggedIn.add(false);
-      return false;
-    }
-    final userData = prefs.getString('userData');
-    _user = FacebookUser.fromJson(json.decode(userData) as Map<String, Object>);
-    if (token == null) {
-      _isLoggedIn.add(false);
-      return false;
-    }
-    _endFunction();
-    _isLoggedIn.add(true);
-    return true;
-  }
-
   void _startFunction() {
     _isLoading.add(true);
     notifyListeners();
@@ -286,12 +255,45 @@ mixin Auth on ConnectedModel {
           print("Cancelled");
           break;
         case FacebookLoginStatus.error:
-          print(result.errorMessage);
+          throw Exception(
+              'An error occured during the login process\nHere\'s what Facebook gave us: ${result.errorMessage}');
           break;
       }
     } catch (error) {
-      throw error;
+      throw Exception(error);
     }
     _endFunction();
+  }
+
+  Future<void> _storePrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('userData', _user.toJson());
+  }
+
+  Future<void> logout() async {
+    await _auth.logOut();
+    final prefs = await SharedPreferences.getInstance();
+    prefs.clear();
+    _user = null;
+    _isLoggedIn.add(false);
+    _endFunction();
+  }
+
+  Future<bool> tryAutoLogin() async {
+    _startFunction();
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      _isLoggedIn.add(false);
+      return false;
+    }
+    final userData = prefs.getString('userData');
+    _user = FacebookUser.fromJson(json.decode(userData) as Map<String, Object>);
+    if (token == null) {
+      _isLoggedIn.add(false);
+      return false;
+    }
+    _endFunction();
+    _isLoggedIn.add(true);
+    return true;
   }
 }

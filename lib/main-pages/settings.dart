@@ -27,7 +27,7 @@ class _SettingsPageState extends State<SettingsPage> {
       builder: (BuildContext context, Widget child, MainModel model) {
         _model = model;
         _model.isLoggedIn.listen((data) {
-          if (data != _loggedIn) {
+          if (data != _loggedIn && mounted) {
             setState(() {
               _loggedIn = data;
             });
