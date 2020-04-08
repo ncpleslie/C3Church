@@ -128,6 +128,8 @@ class _HomePageState extends State<HomePage> {
           message: _posts[index].message,
           createdTime: _posts[index].createdTime,
           link: _posts[index].link,
+          story: _posts[index].story,
+          statusType: _posts[index].statusType,
           comments: _posts[index].comments,
           commentCount: _posts[index].comments.length,
         );

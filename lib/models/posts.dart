@@ -7,6 +7,8 @@ class Post {
   final String picture;
   final String message;
   final String link;
+  final String statusType;
+  final String story;
   final List<dynamic> comments;
   Post({
     this.id,
@@ -14,31 +16,46 @@ class Post {
     this.picture,
     this.message,
     this.link,
+    this.statusType,
+    this.story,
     this.comments,
   });
 
   factory Post.fromJson(Map<String, dynamic> json, Location location) {
     final String id = json['id'] != null ? json['id'] : "NoID";
+
     final String createdTime = json['created_time'] != null
         ? DateFormat('kk:mm - dd-MM-yyyy').format(
             TZDateTime.from(DateTime.parse(json['created_time']), location))
         : "";
+
     final String picture =
         json['full_picture'] != null ? json['full_picture'] : null;
+
     final String message = json['message'] != null ? json['message'] : "";
+
     final String link =
         json['permalink_url'] != null ? json['permalink_url'] : "";
+
+    final String statusType =
+        json['status_type'] != null ? json['status_type'] : null;
+
+    final String story = json['story'] != null ? json['story'] : null;
+
     final List<dynamic> comments = json['comments'] != null
         ? json['comments']['data']
             .map((comment) => Comment.fromJson(comment, location))
             .toList()
         : List<dynamic>();
+
     return Post(
       id: id,
       createdTime: createdTime,
       picture: picture,
       message: message,
       link: link,
+      statusType: statusType,
+      story: story,
       comments: comments,
     );
   }

@@ -12,6 +12,8 @@ class PostCard extends StatelessWidget {
   final String imgUrl;
   final String message;
   final String link;
+  final String statusType;
+  final String story;
   final List<dynamic> comments;
   final int commentCount;
   PostCard(
@@ -21,6 +23,8 @@ class PostCard extends StatelessWidget {
       this.message,
       this.createdTime,
       this.link,
+      this.statusType,
+      this.story,
       this.comments,
       this.commentCount});
   @override
@@ -55,6 +59,8 @@ class PostCard extends StatelessWidget {
           message: message,
           createdTime: createdTime,
           link: link,
+          statusType: statusType,
+          story: story,
           comments: comments,
         ));
   }
@@ -105,24 +111,42 @@ class PostCard extends StatelessWidget {
         ? Container(
             height: MediaQuery.of(context).size.height / 2.5,
             child: Card(
-              elevation: 0,
-              margin: EdgeInsets.all(0.0),
-              child: Hero(
-                tag: id,
-                child: CachedNetworkImage(
-                  fit: BoxFit.fill,
-                  placeholder: (context, url) => Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) => Center(
-                    child: Center(
-                      child: Icon(Icons.error),
+                elevation: 0,
+                margin: EdgeInsets.all(0.0),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      width: MediaQuery.of(context).size.width,
+                      child: Hero(
+                        tag: id,
+                        child: CachedNetworkImage(
+                          fit: BoxFit.fill,
+                          placeholder: (context, url) => Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                          errorWidget: (context, url, error) => Center(
+                            child: Center(
+                              child: Icon(Icons.error),
+                            ),
+                          ),
+                          imageUrl: imgUrl,
+                        ),
+                      ),
                     ),
-                  ),
-                  imageUrl: imgUrl,
-                ),
-              ),
-            ),
+                    story != null
+                        ? Positioned(
+                            child: Container(
+                              alignment: Alignment.bottomCenter,
+                              child: Text(story,
+                                  textScaleFactor: 2,
+                                  style: Theme.of(model.context)
+                                      .textTheme
+                                      .headline5),
+                            ),
+                          )
+                        : Container(),
+                  ],
+                )),
           )
         : Container();
   }
