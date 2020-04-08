@@ -7,6 +7,7 @@ import '../scoped-model/main.dart';
 import '../models/podcasts.dart';
 import '../widgets/podcast_tile.dart';
 import '../widgets/nothing_loaded_card.dart';
+import '../widgets/error.dart';
 
 class MediaPage extends StatefulWidget {
   @override
@@ -66,7 +67,7 @@ class _MediaPageState extends State<MediaPage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Text("${snapshot.error}");
+          return Error(snapshot.error.toString());
         }
         return Center(child: CircularProgressIndicator());
       },

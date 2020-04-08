@@ -19,11 +19,12 @@
 
 ## Later Sprints
 
-- [ ] Update Calendar events on logout
+- [x] Update Calendar events on logout
 - [ ] Refresh events/podcasts on tap or pulldown
 - [ ] Livestream videos with notification /w own tab
 - [ ] Integrate YouTube channel
 - [ ] Infoodle email tab
+- [ ] Split podcasts by location
 
 ## Outside my control
 

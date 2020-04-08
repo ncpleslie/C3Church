@@ -26,11 +26,18 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
   MainModel _model;
 
   @override
+  void initState() {
+    super.initState();
+    _model = ScopedModel.of(context);
+    _subscribeToNotifications();
+    _autoLogin();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         _model = model;
-        _subscribeToNotifications();
         model.context = context;
         return Scaffold(
           body: _getPage(),
@@ -120,14 +127,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
     _model.initialiseNotifications(_showInAppNotification, _outAppNotification);
   }
 
-  bool _loggedIn = false;
-  Future<bool> _autoLoginProcess() async {
-    _loggedIn = false;
-    setState(() {
-      _model.tryAutoLogin().then((_) {
-        _loggedIn = _model.isLoggedIn;
-      });
-    });
-    return _loggedIn;
+  void _autoLogin() {
+    _model.tryAutoLogin();
   }
 }

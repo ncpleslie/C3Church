@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
-class FacebookError extends StatelessWidget {
+class Error extends StatelessWidget {
   final String error;
-  FacebookError(this.error);
+  Error(this.error);
   @override
   Widget build(BuildContext context) {
     return ListTile(

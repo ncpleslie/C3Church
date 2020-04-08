@@ -8,7 +8,7 @@ import '../themes/style.dart';
 import '../globals/app_data.dart';
 import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
-import '../widgets/facebook_error.dart';
+import '../widgets/error.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -27,7 +27,9 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    _autoLoginProcess();
+    if (_loggedIn) {
+      _postFuture = _model.getPosts();
+    }
   }
 
   @override
@@ -52,19 +54,31 @@ class _HomePageState extends State<HomePage> {
         elevation: 0,
         actions: <Widget>[
           IconButton(
-            icon: Icon(
-              Icons.settings,
-              color: Theme.of(context).primaryColor,
-            ),
-            onPressed: () => Navigator.pushNamed(context, 'settings')
-                .then((_) => _autoLoginProcess()),
-          )
+              icon: Icon(
+                Icons.settings,
+                color: Theme.of(context).primaryColor,
+              ),
+              onPressed: () => Navigator.pushNamed(context, 'settings')
+              //.then((_) => _autoLoginProcess()),
+              )
         ],
       ),
       backgroundColor: Theme.of(context).backgroundColor,
       body: ScopedModelDescendant(
         builder: (BuildContext context, Widget child, MainModel model) {
           _model = model;
+          _model.isLoggedIn.listen(
+            (data) {
+              if (data != _loggedIn) {
+                setState(() {
+                  _loggedIn = data;
+                });
+                if (_loggedIn) {
+                  _postFuture = _model.getPosts();
+                }
+              }
+            },
+          );
           return ListView(
             children: <Widget>[
               ServiceCard(_model),
@@ -92,7 +106,7 @@ class _HomePageState extends State<HomePage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return FacebookError(snapshot.error);
+          return Error(snapshot.error.toString());
         }
         return Center(child: CircularProgressIndicator());
       },
@@ -122,29 +136,21 @@ class _HomePageState extends State<HomePage> {
     print("Refreshing");
   }
 
-  void _autoLoginProcess() {
-    setState(() {
-      _postFuture = null;
-      _loggedIn = false;
-      _model.tryAutoLogin().then((_) {
-        _loggedIn = _model.isLoggedIn;
-        if (_loggedIn) {
-          _postFuture = _model.getPosts();
-        }
-      });
-    });
-  }
+  // void _autoLoginProcess() {
+  //   setState(() {
+  //     _postFuture = null;
+  //     _loggedIn = false;
+  //     _model.tryAutoLogin().then((_) {
+  //       if (_loggedIn) {
+  //         _postFuture = _model.getPosts();
+  //       }
+  //     });
+  //   });
+  // }
 
   void _initLoginProcess() {
     _postFuture = null;
     _loggedIn = false;
-    setState(() {
-      _model.login().then((_) {
-        _loggedIn = _model.isLoggedIn;
-        if (_loggedIn) {
-          _postFuture = _model.getPosts();
-        }
-      });
-    });
+    _model.login();
   }
 }

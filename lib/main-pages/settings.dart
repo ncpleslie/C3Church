@@ -17,11 +17,22 @@ class _SettingsPageState extends State<SettingsPage> {
   bool _loggedIn = false;
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         _model = model;
-        _autoLoginProcess();
+        _model.isLoggedIn.listen((data) {
+          if (data != _loggedIn) {
+            setState(() {
+              _loggedIn = data;
+            });
+          }
+        });
         return Scaffold(
           appBar: AppBar(
             backgroundColor: Theme.of(context).backgroundColor,
@@ -38,27 +49,29 @@ class _SettingsPageState extends State<SettingsPage> {
             children: <Widget>[
               // LOGOUT FUNCTION
               _loggedIn
-                  ? ListTile(
-                      leading: Icon(
-                        MdiIcons.facebook,
-                        color: Theme.of(context).accentColor,
-                      ),
-                      title: Text(
-                        'Logout',
-                        style: Theme.of(context).textTheme.headline6,
-                      ),
-                      subtitle: Text(
-                        'Click here to remove Facebook access from this app.',
-                        style: Theme.of(context).textTheme.subtitle2,
-                      ),
-                      trailing: InkWell(
-                        onTap: _logout,
-                        child: Icon(
-                          MdiIcons.logout,
+                  ? InkWell(
+                      onTap: _logout,
+                      child: ListTile(
+                        leading: Icon(
+                          MdiIcons.facebook,
                           color: Theme.of(context).accentColor,
                         ),
-                      ),
-                    )
+                        title: Text(
+                          'Logout',
+                          style: Theme.of(context).textTheme.headline6,
+                        ),
+                        subtitle: Text(
+                          'Click here to remove Facebook access from this app.',
+                          style: Theme.of(context).textTheme.subtitle2,
+                        ),
+                        trailing: InkWell(
+                          onTap: _logout,
+                          child: Icon(
+                            MdiIcons.logout,
+                            color: Theme.of(context).accentColor,
+                          ),
+                        ),
+                      ))
                   : Container(),
               ListTile(
                 leading: Icon(
@@ -98,9 +111,5 @@ class _SettingsPageState extends State<SettingsPage> {
   void _logout() {
     _model.logout();
     setState(() => _loggedIn = false);
-  }
-
-  void _autoLoginProcess() {
-    _loggedIn = _model.isLoggedIn;
   }
 }

@@ -27,6 +27,9 @@ mixin ConnectedModel on Model {
   final _isLoading = BehaviorSubject<bool>(seedValue: false);
   Stream<bool> get isLoading => _isLoading.stream;
 
+  final _isLoggedIn = BehaviorSubject<bool>(seedValue: false);
+  Stream<bool> get isLoggedIn => _isLoggedIn.stream;
+
   Location _location;
 
   FacebookUser _user;
@@ -36,33 +39,26 @@ mixin ConnectedModel on Model {
       if (_user.expiryDate != null &&
           _user.expiryDate.isAfter(DateTime.now()) &&
           _user.token != null) {
+        _isLoggedIn.add(true);
         return _user.token;
       }
+      _isLoggedIn.add(false);
       return null;
     }
-    return null;
-  }
-
-  bool get isLoggedIn {
-    return token != null;
-  }
-
-  FacebookUser get user {
-    if (_user != null) {
-      return _user;
-    }
+    _isLoggedIn.add(false);
     return null;
   }
 
   Future<void> _storePrefs() async {
     final prefs = await SharedPreferences.getInstance();
-    prefs.setString('userData', user.toJson());
+    prefs.setString('userData', _user.toJson());
   }
 
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
     _user = null;
+    _isLoggedIn.add(false);
     _endFunction();
   }
 
@@ -70,14 +66,17 @@ mixin ConnectedModel on Model {
     _startFunction();
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
+      _isLoggedIn.add(false);
       return false;
     }
     final userData = prefs.getString('userData');
     _user = FacebookUser.fromJson(json.decode(userData) as Map<String, Object>);
     if (token == null) {
+      _isLoggedIn.add(false);
       return false;
     }
     _endFunction();
+    _isLoggedIn.add(true);
     return true;
   }
 
@@ -97,8 +96,12 @@ mixin ConnectedModel on Model {
     final http.Response response = await http.get(url);
     if (response.statusCode == 200) {
       return response;
+    } else if (response.statusCode == 403) {
+      throw Exception(
+          '${json.decode(response.body)['error']['message']}.\nThis shouldn\'t happen.\nTry restarting the application.');
     } else {
-      throw Exception("Failed to load data");
+      throw Exception(
+          "Failed to load data from external source.\nThis shouldn't happen.\nTry restarting the application.");
     }
   }
 
@@ -150,20 +153,16 @@ mixin CalendarModel on ConnectedModel {
   final String _eventUrl = FACEBOOK_EVENT_URL + "&access_token=";
 
   Future<List<dynamic>> getEvents() async {
-    try {
-      print('Fetching Calendar Events');
-      _startFunction();
-      // Set Timezone to NZ (only location this app will work)
-      await loadDefaultData().then((rawData) => _getLocation(rawData));
-      final http.Response response = await _fetch(_eventUrl + token);
-      Iterable json = jsonDecode(response.body)['events']['data'];
-      _endFunction();
-      return json
-          .map((event) => CalendarEvent.fromJson(event, _location))
-          .toList();
-    } catch (e, stack) {
-      throw "There was an error: $e \n $stack";
-    }
+    print('Fetching Calendar Events');
+    _startFunction();
+    // Set Timezone to NZ (only location this app will work)
+    await loadDefaultData().then((rawData) => _getLocation(rawData));
+    final http.Response response = await _fetch(_eventUrl + token);
+    Iterable json = jsonDecode(response.body)['events']['data'];
+    _endFunction();
+    return json
+        .map((event) => CalendarEvent.fromJson(event, _location))
+        .toList();
   }
 }
 
@@ -281,6 +280,7 @@ mixin Auth on ConnectedModel {
               token: result.accessToken.token,
               expiryDate: result.accessToken.expires);
           _storePrefs();
+          _isLoggedIn.add(true);
           break;
         case FacebookLoginStatus.cancelledByUser:
           print("Cancelled");

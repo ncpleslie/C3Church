@@ -7,7 +7,7 @@ import '../widgets/calendar_events.dart';
 import '../scoped-model/main.dart';
 import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
-import '../widgets/facebook_error.dart';
+import '../widgets/error.dart';
 
 class CalendarPage extends StatefulWidget {
   @override
@@ -28,7 +28,10 @@ class _CalendarPageState extends State<CalendarPage> {
   void initState() {
     super.initState();
     _model = ScopedModel.of(context);
-    _autoLoginProcess();
+
+    if (_loggedIn) {
+      _calendarFuture = _model.getEvents();
+    }
   }
 
   @override
@@ -36,15 +39,26 @@ class _CalendarPageState extends State<CalendarPage> {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         _model = model;
+        _model.isLoggedIn.listen(
+          (data) {
+            if (data != _loggedIn) {
+              setState(() {
+                _loggedIn = data;
+              });
+              if (_loggedIn) {
+                _calendarFuture = _model.getEvents();
+              }
+            }
+          },
+        );
         return Scaffold(
           key: _calendarScaffoldKey,
           backgroundColor: Theme.of(context).backgroundColor,
           body: SafeArea(
-            top: true,
-            child: _loggedIn
-                ? _buildFutureListView(context)
-                : FacebookLoginButton(_initLoginProcess),
-          ),
+              top: true,
+              child: _loggedIn
+                  ? _buildFutureListView(context)
+                  : FacebookLoginButton(_initLoginProcess)),
         );
       },
     );
@@ -64,7 +78,7 @@ class _CalendarPageState extends State<CalendarPage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return FacebookError(snapshot.error);
+          return Error(snapshot.error.toString());
         } else
           return Center(child: CircularProgressIndicator());
       },
@@ -84,29 +98,9 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  void _autoLoginProcess() {
-    setState(() {
-      _calendarFuture = null;
-      _loggedIn = false;
-      _model.tryAutoLogin().then((_) {
-        _loggedIn = _model.isLoggedIn;
-        if (_loggedIn) {
-          _calendarFuture = _model.getEvents();
-        }
-      });
-    });
-  }
-
   void _initLoginProcess() {
-    setState(() {
-      _calendarFuture = null;
-      _loggedIn = false;
-      _model.login().then((_) {
-        _loggedIn = _model.isLoggedIn;
-        if (_loggedIn) {
-          _calendarFuture = _model.getEvents();
-        }
-      });
-    });
+    _calendarFuture = null;
+    _loggedIn = false;
+    _model.login();
   }
 }
