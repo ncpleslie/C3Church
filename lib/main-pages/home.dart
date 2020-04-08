@@ -9,6 +9,7 @@ import '../globals/app_data.dart';
 import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
 import '../widgets/error.dart';
+import '../models/posts.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -114,20 +115,22 @@ class _HomePageState extends State<HomePage> {
   }
 
   ListView _buildListView() {
-    return ListView.separated(
+    return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 10),
-      separatorBuilder: (BuildContext context, int index) =>
-          Padding(padding: EdgeInsets.symmetric(vertical: 5)),
       shrinkWrap: true,
       physics: ScrollPhysics(),
       itemCount: _posts != null ? _posts.length : 0,
       itemBuilder: (BuildContext context, int index) {
         return PostCard(
-            model: _model,
-            id: _posts[index].id,
-            imgUrl: _posts[index].picture,
-            message: _posts[index].message,
-            createdTime: _posts[index].createdTime);
+          model: _model,
+          id: _posts[index].id,
+          imgUrl: _posts[index].picture,
+          message: _posts[index].message,
+          createdTime: _posts[index].createdTime,
+          link: _posts[index].link,
+          comments: _posts[index].comments,
+          commentCount: _posts[index].comments.length,
+        );
       },
     );
   }
@@ -135,18 +138,6 @@ class _HomePageState extends State<HomePage> {
   void _refresh() {
     print("Refreshing");
   }
-
-  // void _autoLoginProcess() {
-  //   setState(() {
-  //     _postFuture = null;
-  //     _loggedIn = false;
-  //     _model.tryAutoLogin().then((_) {
-  //       if (_loggedIn) {
-  //         _postFuture = _model.getPosts();
-  //       }
-  //     });
-  //   });
-  // }
 
   void _initLoginProcess() {
     _postFuture = null;

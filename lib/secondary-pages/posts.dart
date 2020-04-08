@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import '../scoped-model/main.dart';
 import '../models/posts.dart';
@@ -12,7 +13,7 @@ class PostPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
-        backgroundColor: Theme.of(context).backgroundColor,
+        backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
       ),
       body: _buildBody(context, args),
@@ -34,26 +35,111 @@ class PostPage extends StatelessWidget {
               color: Theme.of(context).cardColor,
               child: Column(
                 children: <Widget>[
-                  Hero(
-                    tag: args.id,
-                    child: CachedNetworkImage(
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      errorWidget: (context, url, error) => Center(
-                        child: Center(
-                          child: Icon(Icons.error),
-                        ),
-                      ),
-                      imageUrl: args.picture,
-                    ),
-                  )
+                  args.picture != null
+                      ? Hero(
+                          tag: args.id,
+                          child: CachedNetworkImage(
+                            fit: BoxFit.fitWidth,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => Center(
+                              child: Center(
+                                child: Icon(Icons.error),
+                              ),
+                            ),
+                            imageUrl: args.picture,
+                          ),
+                        )
+                      : Container(),
+                  _buildTitle(context, model, args),
+                  _buildLinkBar(context, model, args),
                 ],
               ),
-            )
+            ),
+            _buildComments(context, model, args)
           ],
         );
       },
+    );
+  }
+
+  Widget _buildTitle(BuildContext context, MainModel model, Post args) {
+    return ListTile(
+      title: Text(
+        args.createdTime,
+        style: Theme.of(context).textTheme.subtitle2,
+      ),
+      subtitle: args.message.length != 0
+          ? Text(
+              args.message,
+              style: Theme.of(context).textTheme.headline4,
+              maxLines: 4,
+              overflow: TextOverflow.ellipsis,
+            )
+          : Container(),
+    );
+  }
+
+  Widget _buildComments(BuildContext context, MainModel model, Post args) {
+    return ListView.separated(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        separatorBuilder: (BuildContext context, int index) =>
+            Padding(padding: EdgeInsets.symmetric(vertical: 2)),
+        shrinkWrap: true,
+        physics: ScrollPhysics(),
+        itemCount: args.comments.length,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            color: Theme.of(context).cardColor,
+            child: ListTile(
+              title: Text(
+                args.comments[index].message,
+                style: Theme.of(context).textTheme.headline4,
+              ),
+              subtitle: Text(
+                args.comments[index].createdTime,
+                style: Theme.of(context).textTheme.subtitle2,
+              ),
+            ),
+          );
+        });
+  }
+
+  Widget _buildLinkBar(BuildContext context, MainModel model, Post args) {
+    return ListTile(
+      title: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          _buildButton(context, model,
+              icon: MdiIcons.facebook,
+              title: '',
+              onPress: () => model.website(website: args.link)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildButton(BuildContext context, MainModel model,
+      {IconData icon, String title, Function onPress}) {
+    return RaisedButton(
+      elevation: 0,
+      shape: title.length == 0
+          ? CircleBorder()
+          : RoundedRectangleBorder(borderRadius: BorderRadius.circular(30.0)),
+      color: Theme.of(context).accentColor,
+      textColor: Theme.of(context).primaryColor,
+      child: Row(
+        children: <Widget>[
+          Icon(
+            icon,
+          ),
+          Text(
+            title,
+          ),
+        ],
+      ),
+      onPressed: () => onPress(),
     );
   }
 }

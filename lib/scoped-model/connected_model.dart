@@ -140,13 +140,17 @@ mixin PostModel on ConnectedModel {
   final String _postUrl = FACEBOOK_POST_URL + "&access_token=";
 
   Future<List<dynamic>> getPosts() async {
-    print('Fetching Facebook Posts');
-    _startFunction();
-    final http.Response response = await _fetch(_postUrl + token);
-    _endFunction();
-    return jsonDecode(response.body)['posts']['data']
-        .map((post) => Post.fromJson(post, _location))
-        .toList();
+    try {
+      print('Fetching Facebook Posts');
+      _startFunction();
+      final http.Response response = await _fetch(_postUrl + token);
+      _endFunction();
+      return jsonDecode(response.body)['posts']['data']
+          .map((post) => Post.fromJson(post, _location))
+          .toList();
+    } catch (e, stack) {
+      throw Exception("Tried fetching posts.\n$e was declared.\nTrace: $stack");
+    }
   }
 }
 

@@ -18,6 +18,11 @@ final ThemeData themeData = ThemeData(
   iconTheme: IconThemeData(color: Color(0xFF232F34)),
   fontFamily: 'WorkSansSubtitle',
   textTheme: TextTheme(
+    headline4: TextStyle(
+        color: Color(0xFF232F34),
+        fontWeight: FontWeight.w500,
+        fontSize: 20.0,
+        fontFamily: 'WorkSansTitle'),
     headline5: TextStyle(
         color: Colors.white,
         fontWeight: FontWeight.w100,
