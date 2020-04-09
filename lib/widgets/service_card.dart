@@ -81,7 +81,6 @@ class ServiceCard extends StatelessWidget {
                   alignment: Alignment.center,
                   icon: Icon(
                     Icons.location_on,
-                    size: 30.0,
                     color: Theme.of(context).primaryColor,
                   ),
                   onPressed: () => model.loadMaps(context),

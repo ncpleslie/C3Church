@@ -35,23 +35,7 @@ class PostPage extends StatelessWidget {
               color: Theme.of(context).cardColor,
               child: Column(
                 children: <Widget>[
-                  args.picture != null
-                      ? Hero(
-                          tag: args.id,
-                          child: CachedNetworkImage(
-                            fit: BoxFit.fitWidth,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) => Center(
-                              child: Center(
-                                child: Icon(Icons.error),
-                              ),
-                            ),
-                            imageUrl: args.picture,
-                          ),
-                        )
-                      : Container(),
+                  _buildPicture(context, args),
                   _buildTitle(context, model, args),
                   _buildLinkBar(context, model, args),
                 ],
@@ -64,6 +48,58 @@ class PostPage extends StatelessWidget {
     );
   }
 
+  Widget _buildPicture(BuildContext context, Post args) {
+    return args.fullPicture != null
+        ? Container(
+            height: MediaQuery.of(context).size.height / 2.5,
+            child: Card(
+                elevation: 0,
+                margin: EdgeInsets.all(0.0),
+                child: Stack(
+                  children: <Widget>[
+                    Positioned(
+                      child: Hero(
+                        tag: args.id,
+                        child: Container(
+                          alignment: Alignment.center,
+                          child: CachedNetworkImage(
+                            alignment: Alignment.center,
+                            fit: BoxFit.contain,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) => Center(
+                              child: Center(
+                                child: Icon(Icons.error),
+                              ),
+                            ),
+                            imageUrl: args.fullPicture,
+                          ),
+                        ),
+                      ),
+                    ),
+                    _buildPlayButton(context, args.story),
+                  ],
+                )),
+          )
+        : Container();
+  }
+
+  Widget _buildPlayButton(BuildContext context, String story) {
+    return story != null && story.toLowerCase().contains("live")
+        ? Positioned(
+            child: Container(
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.play_circle_outline,
+                color: Theme.of(context).cardColor,
+                size: 100,
+              ),
+            ),
+          )
+        : Container();
+  }
+
   Widget _buildTitle(BuildContext context, MainModel model, Post args) {
     return ListTile(
       title: Text(
@@ -74,8 +110,6 @@ class PostPage extends StatelessWidget {
           ? Text(
               args.message,
               style: Theme.of(context).textTheme.headline4,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
             )
           : Container(),
     );
@@ -113,7 +147,7 @@ class PostPage extends StatelessWidget {
         children: <Widget>[
           _buildButton(context, model,
               icon: MdiIcons.facebook,
-              title: '',
+              title: ' See on Facebook',
               onPress: () => model.website(website: args.link)),
         ],
       ),

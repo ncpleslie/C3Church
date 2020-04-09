@@ -125,6 +125,7 @@ class _HomePageState extends State<HomePage> {
           model: _model,
           id: _posts[index].id,
           imgUrl: _posts[index].picture,
+          fullImgUrl: _posts[index].fullPicture,
           message: _posts[index].message,
           createdTime: _posts[index].createdTime,
           link: _posts[index].link,

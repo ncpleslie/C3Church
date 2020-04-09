@@ -43,14 +43,14 @@
 
 ### Posts
 - [x] Simplify arrow icon, remove outline
-- [ ] More concise ability to know if video
+- [x] More concise ability to know if video
 - [ ] Play the video
 
 ### Facebook login
 - [ ] Replace fb icon with fb icon found on location page
 
 ### Location
-- [ ] Make location icon smaller in the circle
+- [x] Make location icon smaller in the circle
 
 ## Outside my control
 

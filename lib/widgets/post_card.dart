@@ -10,6 +10,7 @@ class PostCard extends StatelessWidget {
   final String id;
   final String createdTime;
   final String imgUrl;
+  final String fullImgUrl;
   final String message;
   final String link;
   final String statusType;
@@ -20,6 +21,7 @@ class PostCard extends StatelessWidget {
       {this.model,
       this.id,
       this.imgUrl,
+      this.fullImgUrl,
       this.message,
       this.createdTime,
       this.link,
@@ -40,15 +42,50 @@ class PostCard extends StatelessWidget {
       margin: EdgeInsets.fromLTRB(5.0, 0.0, 5.0, 5.0),
       child: InkWell(
         onTap: () => _loadRoute(context),
-        child: Column(
-          children: <Widget>[
-            _buildTitle(context),
-            _buildImage(context),
-            _buildCommentCount(context)
-          ],
+        child: Container(
+          decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
+          child: Stack(
+            children: <Widget>[
+              _buildImage(context),
+              _buildTitle(context),
+              // _buildCommentCount(context)
+            ],
+          ),
         ),
       ),
     );
+  }
+
+  Widget _buildImage(BuildContext context) {
+    return imgUrl != null
+        ? Container(
+            width: MediaQuery.of(context).size.width / 3,
+            margin: EdgeInsets.all(0),
+            padding: EdgeInsets.symmetric(horizontal: 12.5, vertical: 12.5),
+            child: Stack(
+              children: <Widget>[
+                Positioned(
+                  width: MediaQuery.of(context).size.width,
+                  child: Hero(
+                    tag: id,
+                    child: CachedNetworkImage(
+                      fit: BoxFit.fitWidth,
+                      placeholder: (context, url) => Center(
+                        child: CircularProgressIndicator(),
+                      ),
+                      errorWidget: (context, url, error) => Center(
+                        child: Center(
+                          child: Icon(Icons.error),
+                        ),
+                      ),
+                      imageUrl: imgUrl,
+                    ),
+                  ),
+                ),
+                _buildPlayButton(context),
+              ],
+            ))
+        : Container();
   }
 
   void _loadRoute(BuildContext context) {
@@ -56,6 +93,7 @@ class PostCard extends StatelessWidget {
         arguments: Post(
           id: id,
           picture: imgUrl,
+          fullPicture: fullImgUrl,
           message: message,
           createdTime: createdTime,
           link: link,
@@ -76,18 +114,35 @@ class PostCard extends StatelessWidget {
 
   Widget _buildTitle(BuildContext context) {
     return ListTile(
-      title: Text(
-        createdTime,
-        style: Theme.of(model.context).textTheme.subtitle2,
+      title: Padding(
+        padding: EdgeInsets.fromLTRB(120.0, 0.0, 0, 0.0),
+        child: Text(
+          createdTime,
+          style: Theme.of(model.context).textTheme.subtitle2,
+        ),
       ),
-      subtitle: message.length != 0
-          ? Text(
-              message,
-              style: Theme.of(model.context).textTheme.headline4,
-              maxLines: 4,
-              overflow: TextOverflow.ellipsis,
-            )
-          : Container(),
+      subtitle: Column(
+        children: <Widget>[
+          message.length != 0
+              ? Padding(
+                  padding: EdgeInsets.fromLTRB(50.0, 0.0, 0, 0.0),
+                  child: Text(
+                    message,
+                    style: Theme.of(model.context).textTheme.headline4,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+              : Container(),
+          Padding(
+            padding: EdgeInsets.fromLTRB(64.0, 0.0, 0, 0.0),
+            child: Text(
+              'Comments: ${comments.length}',
+              style: Theme.of(model.context).textTheme.subtitle2,
+            ),
+          )
+        ],
+      ),
       trailing: Container(
         margin: EdgeInsets.all(12.0),
         decoration: BoxDecoration(
@@ -106,47 +161,17 @@ class PostCard extends StatelessWidget {
     );
   }
 
-  Widget _buildImage(BuildContext context) {
-    return imgUrl != null
-        ? Container(
-            height: MediaQuery.of(context).size.height / 2.5,
-            child: Card(
-                elevation: 0,
-                margin: EdgeInsets.all(0.0),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      width: MediaQuery.of(context).size.width,
-                      child: Hero(
-                        tag: id,
-                        child: CachedNetworkImage(
-                          fit: BoxFit.fill,
-                          placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                          errorWidget: (context, url, error) => Center(
-                            child: Center(
-                              child: Icon(Icons.error),
-                            ),
-                          ),
-                          imageUrl: imgUrl,
-                        ),
-                      ),
-                    ),
-                    story != null
-                        ? Positioned(
-                            child: Container(
-                              alignment: Alignment.bottomCenter,
-                              child: Text(story,
-                                  textScaleFactor: 2,
-                                  style: Theme.of(model.context)
-                                      .textTheme
-                                      .headline5),
-                            ),
-                          )
-                        : Container(),
-                  ],
-                )),
+  Widget _buildPlayButton(BuildContext context) {
+    return story != null && story.toLowerCase().contains("live")
+        ? Positioned(
+            child: Container(
+              alignment: Alignment.center,
+              child: Icon(
+                Icons.play_circle_outline,
+                color: Theme.of(context).cardColor,
+                size: 100,
+              ),
+            ),
           )
         : Container();
   }

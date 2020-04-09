@@ -17,10 +17,10 @@ class CalendarEvents extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _buildListCalendarEvents(data);
+    return _buildListCalendarEvents(context, data);
   }
 
-  Widget _buildListCalendarEvents(CalendarEvent data) {
+  Widget _buildListCalendarEvents(BuildContext context, CalendarEvent data) {
     Map dates = _formatDate(data);
     return Card(
       elevation: 0,
@@ -29,7 +29,7 @@ class CalendarEvents extends StatelessWidget {
         decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
         child: Stack(
           children: <Widget>[
-            _addLeadingBlock(dates),
+            _addLeadingBlock(context, dates),
             _addExpandsionCalendarContent(dates)
           ],
         ),
@@ -37,12 +37,12 @@ class CalendarEvents extends StatelessWidget {
     );
   }
 
-  Widget _addLeadingBlock(dates) {
+  Widget _addLeadingBlock(BuildContext context, dates) {
     return Container(
       width: 70,
       margin: EdgeInsets.all(0),
       padding: EdgeInsets.symmetric(horizontal: 12.5, vertical: 12.5),
-      color: Color(0xFFF9AA33),
+      color: Theme.of(context).accentColor,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[

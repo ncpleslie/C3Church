@@ -49,6 +49,6 @@ const String FACEBOOK_URL =
     "https://graph.facebook.com/v6.0/eastsidec3?fields=";
 
 const String FACEBOOK_POST_URL = FACEBOOK_URL +
-    'posts{permalink_url,created_time,full_picture,id,message,status_type,story,comments{id,created_time,message}}';
+    'posts{permalink_url,created_time,full_picture,picture,id,message,status_type,story,comments{id,created_time,message}}';
 
 const String FACEBOOK_EVENT_URL = FACEBOOK_URL + "events";

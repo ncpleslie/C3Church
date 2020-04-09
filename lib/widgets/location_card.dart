@@ -54,7 +54,6 @@ class LocationCard extends StatelessWidget {
                   icon: Icon(
                     Icons.location_on,
                     color: Theme.of(context).primaryColor,
-                    size: 30.0,
                   ),
                   onPressed: () => model.loadMaps(context),
                 ),

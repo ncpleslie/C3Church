@@ -5,6 +5,7 @@ class Post {
   final String id;
   final String createdTime;
   final String picture;
+  final String fullPicture;
   final String message;
   final String link;
   final String statusType;
@@ -14,6 +15,7 @@ class Post {
     this.id,
     this.createdTime,
     this.picture,
+    this.fullPicture,
     this.message,
     this.link,
     this.statusType,
@@ -29,7 +31,8 @@ class Post {
             TZDateTime.from(DateTime.parse(json['created_time']), location))
         : "";
 
-    final String picture =
+    final String picture = json['picture'] != null ? json['picture'] : null;
+    final String fullPicture =
         json['full_picture'] != null ? json['full_picture'] : null;
 
     final String message = json['message'] != null ? json['message'] : "";
@@ -52,6 +55,7 @@ class Post {
       id: id,
       createdTime: createdTime,
       picture: picture,
+      fullPicture: fullPicture,
       message: message,
       link: link,
       statusType: statusType,
