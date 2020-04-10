@@ -62,7 +62,7 @@ class CalendarEvents extends StatelessWidget {
   Widget _addExpandsionCalendarContent(dates) {
     return ExpansionTile(
       title: Padding(
-        padding: EdgeInsets.fromLTRB(60.0, 5.0, 0, 5.0),
+        padding: EdgeInsets.fromLTRB(70.0, 5.0, 0, 5.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
@@ -80,32 +80,49 @@ class CalendarEvents extends StatelessWidget {
       ),
       children: <Widget>[
         ListTile(
-          contentPadding:
-              EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0),
-          title: Text(
-            data.location,
-            style: Theme.of(model.context).textTheme.headline6,
-          ),
-          subtitle: Padding(
-            padding: EdgeInsets.only(top: 10.0),
-            child: Text(data.summary,
-                style: Theme.of(model.context).textTheme.subtitle2),
-          ),
-          trailing: Container(
-            decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Theme.of(model.context).accentColor),
-            child: IconButton(
-              icon: Icon(
-                MdiIcons.calendarPlus,
-                size: 30.0,
-                color: Theme.of(model.context).primaryColor,
-              ),
-              onPressed: () => _addEventToDeviceCalendar(),
+          title: Padding(
+            padding: EdgeInsets.fromLTRB(70.0, 10.0, 0, 0.0),
+            child: Text(
+              'Location: ${data.location}',
+              style: Theme.of(model.context).textTheme.subtitle2,
             ),
+          ),
+          subtitle: Column(
+            children: <Widget>[
+              Padding(
+                padding: EdgeInsets.fromLTRB(70.0, 10.0, 0, 0.0),
+                child: Text(data.summary,
+                    style: Theme.of(model.context).textTheme.subtitle2),
+              ),
+              _addEventButton()
+            ],
           ),
         ),
       ],
+    );
+  }
+
+  Widget _addEventButton() {
+    return Padding(
+      padding: EdgeInsets.symmetric(vertical: 10),
+      child: SizedBox(
+        width: double.infinity,
+        height: MediaQuery.of(model.context).size.height / 15,
+        child: RaisedButton.icon(
+          shape: const RoundedRectangleBorder(
+              borderRadius: BorderRadius.all(
+            Radius.circular(0.0),
+          )),
+          label: Text("Add Event To Calendar"),
+          elevation: 0,
+          color: Theme.of(model.context).accentColor,
+          icon: Icon(
+            MdiIcons.calendarPlus,
+            color: Theme.of(model.context).primaryColor,
+          ),
+          onPressed: () => _addEventToDeviceCalendar(),
+        ),
+      ),
     );
   }
 

@@ -13,7 +13,7 @@
 - [X] Facebook API Access
 - [x] Migrate from Google Calendars to Facebook events
 - [x] Facebook blog/posts on front page
-- [ ] Style blog posts
+- [x] Style blog posts
 - [x] Style Facebook Login button
 - [x] Store access token
 
@@ -27,14 +27,14 @@
 - [ ] Split podcasts by location
 
 ### Calendar
-- [ ] Pad calendar events to the right. Same distance from number to square edge.
+- [x] Pad calendar events to the right. Same distance from number to square edge.
 - [ ] Set title size to Volleyball event size
 - [ ] Add calender event overflow for large strings
-- [ ] More concise declaration of information: "location: ", etc
-- [ ] Location size smaller. Make locations all the same size
-- [ ] Similar sized spacing for the information/location info as there will be on the title
-- [ ] Move expanded information to the right so it has the same whitespace as the width of the square
-- [ ] Move add event to the new whitespace or move to the bottom to cover the entire base
+- [x] More concise declaration of information: "location: ", etc
+- [x] Location size smaller. Make locations all the same size
+- [x] Similar sized spacing for the information/location info as there will be on the title
+- [x] Move expanded information to the right so it has the same whitespace as the width of the square
+- [x] Move add event to the new whitespace or move to the bottom to cover the entire base
 
 ### Podcasts
 - [ ] Make titles smaller
@@ -44,10 +44,12 @@
 ### Posts
 - [x] Simplify arrow icon, remove outline
 - [x] More concise ability to know if video
-- [ ] Play the video
+- [x] Link to video
+- [ ] Play the video/embed
 
 ### Facebook login
-- [ ] Replace fb icon with fb icon found on location page
+- [x] Replace fb icon with fb icon found on location page
+- [x] Follow facebook design guidelines for login button 
 
 ### Location
 - [x] Make location icon smaller in the circle

@@ -35,7 +35,7 @@ class PostPage extends StatelessWidget {
               color: Theme.of(context).cardColor,
               child: Column(
                 children: <Widget>[
-                  _buildPicture(context, args),
+                  _buildPicture(context, model, args),
                   _buildTitle(context, model, args),
                   _buildLinkBar(context, model, args),
                 ],
@@ -48,7 +48,7 @@ class PostPage extends StatelessWidget {
     );
   }
 
-  Widget _buildPicture(BuildContext context, Post args) {
+  Widget _buildPicture(BuildContext context, MainModel model, Post args) {
     return args.fullPicture != null
         ? Container(
             height: MediaQuery.of(context).size.height / 2.5,
@@ -78,22 +78,24 @@ class PostPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    _buildPlayButton(context, args.story),
+                    _buildPlayButton(context, model, args),
                   ],
                 )),
           )
         : Container();
   }
 
-  Widget _buildPlayButton(BuildContext context, String story) {
-    return story != null && story.toLowerCase().contains("live")
+  Widget _buildPlayButton(BuildContext context, MainModel model, Post args) {
+    return args.statusType != null &&
+            args.statusType.toLowerCase().contains("video")
         ? Positioned(
             child: Container(
               alignment: Alignment.center,
-              child: Icon(
-                Icons.play_circle_outline,
+              child: IconButton(
+                icon: Icon(Icons.play_circle_outline),
                 color: Theme.of(context).cardColor,
-                size: 100,
+                iconSize: 100,
+                onPressed: () => model.website(website: args.link),
               ),
             ),
           )

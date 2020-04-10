@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:flutter_auth_buttons/flutter_auth_buttons.dart';
 
 class FacebookLoginButton extends StatelessWidget {
   final Function login;
@@ -9,21 +9,17 @@ class FacebookLoginButton extends StatelessWidget {
     return InkWell(
       onTap: login,
       child: ListTile(
-        leading: Icon(
-          MdiIcons.facebook,
-          color: Theme.of(context).accentColor,
+        title: Padding(
+          padding: EdgeInsets.symmetric(vertical: 30),
         ),
-        title: Text(
-          'Login with Facebook',
-          style: Theme.of(context).textTheme.headline6,
-        ),
-        subtitle: Text(
-          'Login with Facebook to see all the exciting posts and events happening at Eastside C3',
-          style: Theme.of(context).textTheme.subtitle2,
-        ),
-        trailing: Icon(
-          MdiIcons.login,
-          color: Theme.of(context).accentColor,
+        subtitle: Column(
+          children: <Widget>[
+            Text(
+              'Login with Facebook to see all the exciting posts and events happening at Eastside C3',
+              style: Theme.of(context).textTheme.subtitle2,
+            ),
+            FacebookSignInButton(onPressed: login)
+          ],
         ),
       ),
     );

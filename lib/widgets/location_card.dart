@@ -94,26 +94,26 @@ class LocationCard extends StatelessWidget {
               icon: MdiIcons.facebook,
               title: '',
               onPress: () => model.website(website: FACEBOOK)),
-          Container(
-            color: Theme.of(context).accentColor,
-            height: 30,
-            width: 0.5,
-          ),
+          _vertical(context),
           _buildButton(model,
               icon: MdiIcons.twitter,
               title: '',
               onPress: () => model.website(website: TWITTER)),
-          Container(
-            color: Theme.of(context).accentColor,
-            height: 30,
-            width: 0.5,
-          ),
+          _vertical(context),
           _buildButton(model,
               icon: MdiIcons.instagram,
               title: '',
               onPress: () => model.website(website: INSTAGRAM))
         ],
       ),
+    );
+  }
+
+  Widget _vertical(BuildContext context) {
+    return Container(
+      color: Theme.of(context).accentColor,
+      height: 30,
+      width: 0.5,
     );
   }
 
