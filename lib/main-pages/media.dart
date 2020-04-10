@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import '../scoped-model/main.dart';
 import '../models/podcasts.dart';
@@ -44,12 +45,16 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  ListView _buildListView() {
-    return ListView.builder(
-      itemCount: _podcasts != null ? _podcasts.length : 0,
-      itemBuilder: (BuildContext context, int index) {
-        return PodcastTile(_podcasts[index], _model);
-      },
+  LiquidPullToRefresh _buildListView() {
+    return LiquidPullToRefresh(
+      showChildOpacityTransition: false,
+      onRefresh: _refresh,
+      child: ListView.builder(
+        itemCount: _podcasts != null ? _podcasts.length : 0,
+        itemBuilder: (BuildContext context, int index) {
+          return PodcastTile(_podcasts[index], _model);
+        },
+      ),
     );
   }
 
@@ -74,7 +79,8 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  void _refresh() {
-    print("Refreshing");
+  Future _refresh() {
+    _podcastFuture = _model.getPodcasts();
+    return _podcastFuture;
   }
 }

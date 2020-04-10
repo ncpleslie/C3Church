@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 import '../scoped-model/main.dart';
 import '../widgets/service_card.dart';
@@ -9,7 +10,6 @@ import '../globals/app_data.dart';
 import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
 import '../widgets/error.dart';
-import '../models/posts.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -80,7 +80,29 @@ class _HomePageState extends State<HomePage> {
               }
             },
           );
-          return ListView(
+          return _buildLoggedInLoggedOutListView();
+        },
+      ),
+    );
+  }
+
+  Widget _buildLoggedInLoggedOutListView() {
+    return _loggedIn
+        ? LiquidPullToRefresh(
+            showChildOpacityTransition: false,
+            color: Theme.of(context).cardColor,
+            backgroundColor: Theme.of(context).accentColor,
+            onRefresh: _refresh,
+            child: ListView(
+              children: <Widget>[
+                ServiceCard(_model),
+                _loggedIn
+                    ? _buildFutureListView(context)
+                    : FacebookLoginButton(_initLoginProcess)
+              ],
+            ),
+          )
+        : ListView(
             children: <Widget>[
               ServiceCard(_model),
               _loggedIn
@@ -88,9 +110,6 @@ class _HomePageState extends State<HomePage> {
                   : FacebookLoginButton(_initLoginProcess)
             ],
           );
-        },
-      ),
-    );
   }
 
   Widget _buildFutureListView(BuildContext context) {
@@ -138,8 +157,12 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  void _refresh() {
-    print("Refreshing");
+  Future _refresh() {
+    if (_loggedIn) {
+      _postFuture = _model.getPosts();
+      return _postFuture;
+    }
+    return null;
   }
 
   void _initLoginProcess() {

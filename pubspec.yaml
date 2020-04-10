@@ -39,6 +39,7 @@ dependencies:
   flutter_facebook_login: ^3.0.0
   shared_preferences: ^0.5.6+3
   flutter_auth_buttons: ^0.8.0
+  liquid_pull_to_refresh: ^1.1.2
   
 dev_dependencies:
   flutter_launcher_icons: "^0.7.3"
@@ -66,11 +67,9 @@ flutter:
   assets:
     - assets/2018i_2010-2020.tzf
     - assets/itunes-thumb.jpg
-    - assets/placeholder.png
     - assets/c3eastside_logo.jpg
     - assets/header.jpg
     - assets/location.png
-
 
   fonts:
     - family: WorkSansHeadline

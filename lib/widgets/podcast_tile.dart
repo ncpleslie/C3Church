@@ -27,19 +27,16 @@ class PodcastTile extends StatelessWidget {
             child: Container(
               height: 50.0,
               width: 50.0,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(25.0),
-                child: CachedNetworkImage(
-                  placeholder: (context, url) => Center(
-                    child: CircularProgressIndicator(),
-                  ),
-                  errorWidget: (context, url, error) => Center(
-                    child: Center(
-                      child: Icon(Icons.error),
-                    ),
-                  ),
-                  imageUrl: data.image,
+              child: CachedNetworkImage(
+                placeholder: (context, url) => Center(
+                  child: CircularProgressIndicator(),
                 ),
+                errorWidget: (context, url, error) => Center(
+                  child: Center(
+                    child: Icon(Icons.error),
+                  ),
+                ),
+                imageUrl: data.image,
               ),
             ),
           ),
@@ -51,7 +48,7 @@ class PodcastTile extends StatelessWidget {
   Widget _buildPodcastTile() {
     return Card(
       elevation: 0,
-      margin: EdgeInsets.symmetric(horizontal: 10.0, vertical: 6.0),
+      margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
       child: Container(
         decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
         child: ExpansionTile(

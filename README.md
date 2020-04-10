@@ -4,7 +4,7 @@
 
 - [x] Android notifications
 - [ ] iOS notifications
-- [ ] Change notification icon - Android
+- [x] Change notification icon - Android
 - [x] Create ListView on blog posts on home screen
 - [x] Prevent past calendar events from showing
 - [x] Widget to display lack of events/podcasts
@@ -20,7 +20,7 @@
 ## Later Sprints
 
 - [x] Update Calendar events on logout
-- [ ] Refresh events/podcasts on tap or pulldown
+- [x] Refresh events/podcasts on tap or pulldown
 - [ ] Livestream videos with notification /w own tab
 - [ ] Integrate YouTube channel
 - [ ] Infoodle email tab
@@ -39,7 +39,7 @@
 ### Podcasts
 - [ ] Make titles smaller
 - [ ] Text continues on dropdown
-- [ ] Change images to squares
+- [x] Change images to squares
 
 ### Posts
 - [x] Simplify arrow icon, remove outline

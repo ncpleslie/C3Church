@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../widgets/calendar_events.dart';
@@ -85,16 +86,24 @@ class _CalendarPageState extends State<CalendarPage> {
     );
   }
 
-  void _refresh() {
-    print("Refreshing");
+  Future _refresh() {
+    if (_loggedIn) {
+      _calendarFuture = _model.getEvents();
+      return _calendarFuture;
+    }
+    return null;
   }
 
-  ListView _buildListView() {
-    return ListView.builder(
-      itemCount: _events != null ? _events.length : 0,
-      itemBuilder: (BuildContext context, int index) {
-        return CalendarEvents(_events[index], _calendarScaffoldKey, _model);
-      },
+  LiquidPullToRefresh _buildListView() {
+    return LiquidPullToRefresh(
+      showChildOpacityTransition: false,
+      onRefresh: _refresh,
+      child: ListView.builder(
+        itemCount: _events != null ? _events.length : 0,
+        itemBuilder: (BuildContext context, int index) {
+          return CalendarEvents(_events[index], _calendarScaffoldKey, _model);
+        },
+      ),
     );
   }
 

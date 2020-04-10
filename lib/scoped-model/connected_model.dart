@@ -202,17 +202,17 @@ mixin Notifications on ConnectedModel {
       // Called when the app is open and notification recieved
       onMessage: (Map<String, dynamic> message) async {
         String notificationTitle =
-            isNullEmptyOrFalse(message['notification']['title'])
+            !isNullEmptyOrFalse(message['notification']['title'])
                 ? message['notification']['title']
                 : "Error loading notification title";
         String notificationBody =
-            isNullEmptyOrFalse(message['notification']['body'])
+            !isNullEmptyOrFalse(message['notification']['body'])
                 ? message['notification']['body']
                 : "Error loading notification message";
-        String newPage = isNullEmptyOrFalse(message['data']['type'])
+        String newPage = !isNullEmptyOrFalse(message['data']['type'])
             ? message['data']['type']
             : "noPage";
-        int notificationLength = isNullEmptyOrFalse(message['data']['length'])
+        int notificationLength = !isNullEmptyOrFalse(message['data']['length'])
             ? int.tryParse(message['data']['length']) * 1000 ?? 5000
             : 5000;
         activateInAppCallback(
@@ -220,14 +220,14 @@ mixin Notifications on ConnectedModel {
       },
       // Called when the app not in memory/not running and is opened with the notification
       onLaunch: (Map<String, dynamic> message) async {
-        String newPage = isNullEmptyOrFalse(message['data']['type'])
+        String newPage = !isNullEmptyOrFalse(message['data']['type'])
             ? message['data']['type']
             : null;
         activateOutAppCallback(newPage);
       },
       // Called when the app is open, via notification, when running in background
       onResume: (Map<String, dynamic> message) async {
-        String newPage = isNullEmptyOrFalse(message['data']['type'])
+        String newPage = !isNullEmptyOrFalse(message['data']['type'])
             ? message['data']['type']
             : null;
         activateOutAppCallback(newPage);
