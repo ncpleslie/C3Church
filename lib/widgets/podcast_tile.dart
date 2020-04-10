@@ -62,6 +62,7 @@ class _PodcastTileState extends State<PodcastTile> {
         elevation: 0,
         margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
         child: Container(
+          margin: EdgeInsets.fromLTRB(0.0, 2.5, 0.0, 7.5),
           decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
           child: ExpansionTile(
               onExpansionChanged: ((status) => {

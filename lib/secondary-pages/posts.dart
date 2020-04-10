@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../scoped-model/main.dart';
 import '../models/posts.dart';
@@ -105,7 +106,7 @@ class PostPage extends StatelessWidget {
   Widget _buildTitle(BuildContext context, MainModel model, Post args) {
     return ListTile(
       title: Text(
-        args.createdTime,
+        timeago.format(DateTime.parse(args.createdTime)),
         style: Theme.of(context).textTheme.subtitle2,
       ),
       subtitle: args.message.length != 0
@@ -134,7 +135,8 @@ class PostPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline4,
               ),
               subtitle: Text(
-                args.comments[index].createdTime,
+                timeago
+                    .format(DateTime.parse(args.comments[index].createdTime)),
                 style: Theme.of(context).textTheme.subtitle2,
               ),
             ),

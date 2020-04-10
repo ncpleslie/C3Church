@@ -16,6 +16,7 @@ class FacebookLoginButton extends StatelessWidget {
           children: <Widget>[
             Text(
               'Login with Facebook to see all the exciting posts and events happening at Eastside C3',
+              textAlign: TextAlign.center,
               style: Theme.of(context).textTheme.subtitle2,
             ),
             FacebookSignInButton(onPressed: login)

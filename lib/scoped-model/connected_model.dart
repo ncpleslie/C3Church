@@ -149,7 +149,8 @@ mixin PostModel on ConnectedModel {
           .map((post) => Post.fromJson(post, _location))
           .toList();
     } catch (e, stack) {
-      throw Exception("Tried fetching posts.\n$e was declared.\nTrace: $stack");
+      throw Exception(
+          "Tried fetching posts.\n$e was declared.\nTrace: $stack.\nToken status: ${token != null}");
     }
   }
 }

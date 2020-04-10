@@ -40,6 +40,7 @@ dependencies:
   shared_preferences: ^0.5.6+3
   flutter_auth_buttons: ^0.8.0
   liquid_pull_to_refresh: ^1.1.2
+  timeago: ^2.0.26
   
 dev_dependencies:
   flutter_launcher_icons: "^0.7.3"

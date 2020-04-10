@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 import '../scoped-model/main.dart';
 import '../models/posts.dart';
@@ -107,7 +108,7 @@ class PostCard extends StatelessWidget {
       title: Padding(
         padding: EdgeInsets.fromLTRB(0.0, 0.0, 0, 0.0),
         child: Text(
-          createdTime,
+          timeago.format(DateTime.parse(createdTime)),
           style: Theme.of(model.context).textTheme.subtitle2,
         ),
       ),
