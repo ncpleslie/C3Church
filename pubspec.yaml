@@ -66,11 +66,10 @@ flutter:
   assets:
     - assets/2018i_2010-2020.tzf
     - assets/itunes-thumb.jpg
-    - assets/map.png
-    - assets/service.jpg
-    - assets/service.png
     - assets/placeholder.png
     - assets/c3eastside_logo.jpg
+    - assets/header.jpg
+    - assets/location.png
 
 
   fonts:

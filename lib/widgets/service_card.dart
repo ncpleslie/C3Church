@@ -37,27 +37,11 @@ class ServiceCard extends StatelessWidget {
                       width: MediaQuery.of(context).size.width,
                       child: Hero(
                         tag: 'services',
-                        child: CachedNetworkImage(
-                          placeholder: (context, url) => Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                          errorWidget: (context, url, error) => Center(
-                            child: Center(
-                              child: Icon(Icons.error),
-                            ),
-                          ),
-                          imageUrl: SERVICE_IMG_URL,
-                        ),
+                        child:
+                            Image.asset(SERVICE_IMG_URL, fit: BoxFit.fitHeight),
                       ),
                     ),
-                    Positioned(
-                      child: Container(
-                        alignment: Alignment.bottomCenter,
-                        child: Text('Service',
-                            textScaleFactor: 2,
-                            style: Theme.of(model.context).textTheme.headline5),
-                      ),
-                    ),
+                    // _buildOverlay()
                   ],
                 ),
               ),
@@ -89,6 +73,17 @@ class ServiceCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildOverlay() {
+    return Positioned(
+      child: Container(
+        alignment: Alignment.topCenter,
+        child: Text('Service',
+            textScaleFactor: 2,
+            style: Theme.of(model.context).textTheme.headline5),
       ),
     );
   }

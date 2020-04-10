@@ -40,16 +40,8 @@ class ServicesPage extends StatelessWidget {
                 children: <Widget>[
                   Hero(
                     tag: 'services',
-                    child: CachedNetworkImage(
-                      placeholder: (context, url) => Center(
-                        child: CircularProgressIndicator(),
-                      ),
-                      errorWidget: (context, url, error) => Center(
-                        child: Center(
-                          child: Icon(Icons.error),
-                        ),
-                      ),
-                      imageUrl: SERVICE_IMG_URL,
+                    child: Image.asset(
+                      SERVICE_IMG_URL,
                     ),
                   ),
                   ListTile(

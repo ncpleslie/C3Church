@@ -25,7 +25,6 @@ class LocationCard extends StatelessWidget {
                 elevation: 0,
                 child: Image.asset(
                   LOCATION_IMG_URL,
-                  scale: 2,
                 ),
               )),
           _buttonRow(model),

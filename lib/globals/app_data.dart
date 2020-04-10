@@ -38,9 +38,9 @@ const String PRIVACY_POLICY =
     'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, Firebase, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.';
 
 // Misc images
-const String SERVICE_IMG_URL = 'https://via.placeholder.com/2000x1500';
+const String SERVICE_IMG_URL = 'assets/header.jpg';
 const String GET_IN_TOUCH_IMG_URL = 'https://via.placeholder.com/2000x1500';
-const String LOCATION_IMG_URL = 'assets/placeholder.png';
+const String LOCATION_IMG_URL = 'assets/location.png';
 const String PODCAST_IMG_URL = 'assets/itunes-thumb.jpg';
 
 // Facebook Graph API url
