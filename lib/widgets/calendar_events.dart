@@ -9,11 +9,22 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import '../models/calendar_events.dart';
 import '../scoped-model/main.dart';
 
-class CalendarEvents extends StatelessWidget {
+class CalendarEvents extends StatefulWidget {
   final MainModel model;
   final CalendarEvent data;
   final GlobalKey<ScaffoldState> _scaffoldKey;
   CalendarEvents(this.data, this._scaffoldKey, this.model);
+  @override
+  State<StatefulWidget> createState() {
+    return _CalendarEventsState(data, _scaffoldKey, model);
+  }
+}
+
+class _CalendarEventsState extends State<CalendarEvents> {
+  final MainModel model;
+  final CalendarEvent data;
+  final GlobalKey<ScaffoldState> _scaffoldKey;
+  _CalendarEventsState(this.data, this._scaffoldKey, this.model);
 
   @override
   Widget build(BuildContext context) {
@@ -59,17 +70,25 @@ class CalendarEvents extends StatelessWidget {
     );
   }
 
+  bool _open = false;
+
   Widget _addExpandsionCalendarContent(dates) {
     return ExpansionTile(
+      onExpansionChanged: ((status) => {
+            setState(() {
+              _open = status;
+            })
+          }),
       title: Padding(
         padding: EdgeInsets.fromLTRB(70.0, 5.0, 0, 5.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            AutoSizeText(
+            Text(
               data.eventTitle,
-              maxLines: 1,
-              style: Theme.of(model.context).textTheme.headline6,
+              maxLines: _open ? 4 : 1,
+              style: Theme.of(model.context).textTheme.headline4,
+              overflow: TextOverflow.ellipsis,
             ),
             Text(
               '${dates['time']} ${dates['fullDate']}',
