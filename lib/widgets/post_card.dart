@@ -5,6 +5,7 @@ import 'package:timeago/timeago.dart' as timeago;
 
 import '../scoped-model/main.dart';
 import '../models/posts.dart';
+import '../secondary-pages/posts.dart';
 
 class PostCard extends StatelessWidget {
   final MainModel model;
@@ -17,7 +18,7 @@ class PostCard extends StatelessWidget {
   final String statusType;
   final String story;
   final List<dynamic> comments;
-  final int commentCount;
+  final Video video;
   PostCard(
       {this.model,
       this.id,
@@ -29,7 +30,8 @@ class PostCard extends StatelessWidget {
       this.statusType,
       this.story,
       this.comments,
-      this.commentCount});
+      this.video});
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -89,18 +91,24 @@ class PostCard extends StatelessWidget {
   }
 
   void _loadRoute(BuildContext context) {
-    Navigator.pushNamed(context, 'posts',
-        arguments: Post(
-          id: id,
-          picture: imgUrl,
-          fullPicture: fullImgUrl,
-          message: message,
-          createdTime: createdTime,
-          link: link,
-          statusType: statusType,
-          story: story,
-          comments: comments,
-        ));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => PostPage(
+          Post(
+              id: id,
+              picture: imgUrl,
+              fullPicture: fullImgUrl,
+              message: message,
+              createdTime: createdTime,
+              link: link,
+              statusType: statusType,
+              story: story,
+              comments: comments,
+              video: video),
+        ),
+      ),
+    );
   }
 
   Widget _buildTitle(BuildContext context) {
@@ -157,7 +165,7 @@ class PostCard extends StatelessWidget {
                 icon: Icon(Icons.play_circle_outline),
                 color: Theme.of(context).cardColor,
                 iconSize: 100,
-                onPressed: () => model.website(website: link),
+                onPressed: () => _loadRoute(context),
               ),
             ),
           )

@@ -3,26 +3,68 @@ import 'package:scoped_model/scoped_model.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:timeago/timeago.dart' as timeago;
+import 'package:video_player/video_player.dart';
+import 'package:chewie/chewie.dart';
 
 import '../scoped-model/main.dart';
 import '../models/posts.dart';
 
-class PostPage extends StatelessWidget {
+class PostPage extends StatefulWidget {
+  final Post post;
+  PostPage(this.post);
+  @override
+  State<StatefulWidget> createState() {
+    return _PostPageState(post);
+  }
+}
+
+class _PostPageState extends State<PostPage> {
+  final Post post;
+  VideoPlayerController _controller;
+  ChewieController _chewieController;
+  Future<void> _future;
+  _PostPageState(this.post);
+
+  @override
+  void initState() {
+    super.initState();
+    if (post.video != null && post.video.source != null) {
+      _controller = VideoPlayerController.network(post.video.source);
+      _future = _initVideoPlayer();
+    }
+  }
+
+  Future<void> _initVideoPlayer() async {
+    await _controller.initialize();
+    setState(() {
+      _chewieController = ChewieController(
+          videoPlayerController: _controller,
+          aspectRatio: _controller.value.aspectRatio,
+          autoPlay: true,
+          placeholder: _buildPlaceholderImage());
+    });
+  }
+
+  _buildPlaceholderImage() {
+    return Center(
+      child: CircularProgressIndicator(),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
-    final Post args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: AppBar(
         iconTheme: Theme.of(context).iconTheme,
         backgroundColor: Theme.of(context).cardColor,
         elevation: 0,
       ),
-      body: _buildBody(context, args),
+      body: _buildBody(context),
       backgroundColor: Theme.of(context).backgroundColor,
     );
   }
 
-  Widget _buildBody(BuildContext context, Post args) {
+  Widget _buildBody(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         return ListView(
@@ -36,106 +78,110 @@ class PostPage extends StatelessWidget {
               color: Theme.of(context).cardColor,
               child: Column(
                 children: <Widget>[
-                  _buildPicture(context, model, args),
-                  _buildTitle(context, model, args),
-                  _buildLinkBar(context, model, args),
+                  post.video != null
+                      ? _buildVideo(context, model)
+                      : _buildPicture(context, model),
+                  _buildTitle(context, model),
+                  _buildLinkBar(context, model),
                 ],
               ),
             ),
-            _buildComments(context, model, args)
+            _buildComments(context, model)
           ],
         );
       },
     );
   }
 
-  Widget _buildPicture(BuildContext context, MainModel model, Post args) {
-    return args.fullPicture != null
+  Widget _buildVideo(BuildContext context, MainModel model) {
+    return FutureBuilder(
+      future: _future,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting)
+          return _buildPlaceholderImage();
+        return Container(
+          height: MediaQuery.of(context).size.height / 2.5,
+          child: Card(
+            elevation: 0,
+            margin: EdgeInsets.all(0.0),
+            child: Hero(
+              tag: post.id,
+              child: Center(
+                child: Chewie(
+                  controller: _chewieController,
+                ),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPicture(BuildContext context, MainModel model) {
+    return post.fullPicture != null
         ? Container(
             height: MediaQuery.of(context).size.height / 2.5,
             child: Card(
-                elevation: 0,
-                margin: EdgeInsets.all(0.0),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      child: Hero(
-                        tag: args.id,
-                        child: Container(
-                          alignment: Alignment.center,
-                          child: CachedNetworkImage(
-                            alignment: Alignment.center,
-                            fit: BoxFit.contain,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) => Center(
-                              child: Center(
-                                child: Icon(Icons.error),
-                              ),
-                            ),
-                            imageUrl: args.fullPicture,
-                          ),
-                        ),
+              elevation: 0,
+              margin: EdgeInsets.all(0.0),
+              child: Hero(
+                tag: post.id,
+                child: Container(
+                  alignment: Alignment.center,
+                  child: CachedNetworkImage(
+                    alignment: Alignment.center,
+                    fit: BoxFit.contain,
+                    placeholder: (context, url) => Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                    errorWidget: (context, url, error) => Center(
+                      child: Center(
+                        child: Icon(Icons.error),
                       ),
                     ),
-                    _buildPlayButton(context, model, args),
-                  ],
-                )),
-          )
-        : Container();
-  }
-
-  Widget _buildPlayButton(BuildContext context, MainModel model, Post args) {
-    return args.statusType != null &&
-            args.statusType.toLowerCase().contains("video")
-        ? Positioned(
-            child: Container(
-              alignment: Alignment.center,
-              child: IconButton(
-                icon: Icon(Icons.play_circle_outline),
-                color: Theme.of(context).cardColor,
-                iconSize: 100,
-                onPressed: () => model.website(website: args.link),
+                    imageUrl: post.fullPicture,
+                  ),
+                ),
               ),
             ),
           )
         : Container();
   }
 
-  Widget _buildTitle(BuildContext context, MainModel model, Post args) {
+  Widget _buildTitle(BuildContext context, MainModel model) {
     return ListTile(
       title: Text(
-        timeago.format(args.createdTime),
+        timeago.format(post.createdTime),
         style: Theme.of(context).textTheme.subtitle2,
       ),
-      subtitle: args.message.length != 0
+      subtitle: post.message.length != 0
           ? Text(
-              args.message,
+              post.message,
               style: Theme.of(context).textTheme.headline4,
             )
           : Container(),
     );
   }
 
-  Widget _buildComments(BuildContext context, MainModel model, Post args) {
+  Widget _buildComments(BuildContext context, MainModel model) {
     return ListView.separated(
         padding: EdgeInsets.symmetric(vertical: 10),
         separatorBuilder: (BuildContext context, int index) =>
             Padding(padding: EdgeInsets.symmetric(vertical: 2)),
         shrinkWrap: true,
         physics: ScrollPhysics(),
-        itemCount: args.comments.length,
+        itemCount: post.comments.length,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             color: Theme.of(context).cardColor,
             child: ListTile(
               title: Text(
-                args.comments[index].message,
+                post.comments[index].message,
                 style: Theme.of(context).textTheme.headline4,
               ),
               subtitle: Text(
-                timeago.format(args.comments[index].createdTime),
+                timeago.format(post.comments[index].createdTime),
                 style: Theme.of(context).textTheme.subtitle2,
               ),
             ),
@@ -143,7 +189,7 @@ class PostPage extends StatelessWidget {
         });
   }
 
-  Widget _buildLinkBar(BuildContext context, MainModel model, Post args) {
+  Widget _buildLinkBar(BuildContext context, MainModel model) {
     return ListTile(
       title: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -151,7 +197,7 @@ class PostPage extends StatelessWidget {
           _buildButton(context, model,
               icon: MdiIcons.facebook,
               title: ' See on Facebook',
-              onPress: () => model.website(website: args.link)),
+              onPress: () => model.website(website: post.link)),
         ],
       ),
     );
@@ -177,6 +223,48 @@ class PostPage extends StatelessWidget {
         ],
       ),
       onPressed: () => onPress(),
+    );
+  }
+
+  @override
+  void dispose() {
+    if (_controller != null) _controller.dispose();
+    if (_chewieController != null) _chewieController.dispose();
+    super.dispose();
+  }
+}
+
+class _PlayPauseOverlay extends StatelessWidget {
+  const _PlayPauseOverlay({Key key, this.controller}) : super(key: key);
+
+  final VideoPlayerController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      children: <Widget>[
+        AnimatedSwitcher(
+          duration: Duration(milliseconds: 50),
+          reverseDuration: Duration(milliseconds: 200),
+          child: controller.value.isPlaying
+              ? SizedBox.shrink()
+              : Container(
+                  color: Colors.black26,
+                  child: Center(
+                    child: Icon(
+                      Icons.play_arrow,
+                      color: Colors.white,
+                      size: 100.0,
+                    ),
+                  ),
+                ),
+        ),
+        GestureDetector(
+          onTap: () {
+            controller.value.isPlaying ? controller.pause() : controller.play();
+          },
+        ),
+      ],
     );
   }
 }

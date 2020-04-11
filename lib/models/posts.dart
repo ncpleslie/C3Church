@@ -1,4 +1,3 @@
-import 'package:intl/intl.dart';
 import 'package:timezone/standalone.dart';
 
 class Post {
@@ -11,17 +10,18 @@ class Post {
   final String statusType;
   final String story;
   final List<dynamic> comments;
-  Post({
-    this.id,
-    this.createdTime,
-    this.picture,
-    this.fullPicture,
-    this.message,
-    this.link,
-    this.statusType,
-    this.story,
-    this.comments,
-  });
+  final Video video;
+  Post(
+      {this.id,
+      this.createdTime,
+      this.picture,
+      this.fullPicture,
+      this.message,
+      this.link,
+      this.statusType,
+      this.story,
+      this.comments,
+      this.video});
 
   factory Post.fromJson(Map<String, dynamic> json, Location location) {
     final String id = json['id'] != null ? json['id'] : "NoID";
@@ -50,17 +50,28 @@ class Post {
             .toList()
         : List<dynamic>();
 
+    Video video;
+
+    if (json['attachments'] != null &&
+        json['attachments']['data'][0]['media_type'] == "video") {
+      video = json['attachments']['data'][0]['media'] != null
+          ? Video.fromJson(json['attachments']['data'][0])
+          : null;
+    } else {
+      video = null;
+    }
+
     return Post(
-      id: id,
-      createdTime: createdTime,
-      picture: picture,
-      fullPicture: fullPicture,
-      message: message,
-      link: link,
-      statusType: statusType,
-      story: story,
-      comments: comments,
-    );
+        id: id,
+        createdTime: createdTime,
+        picture: picture,
+        fullPicture: fullPicture,
+        message: message,
+        link: link,
+        statusType: statusType,
+        story: story,
+        comments: comments,
+        video: video);
   }
 }
 
@@ -77,5 +88,27 @@ class Comment {
         : null;
     final String message = json['message'] != null ? json['message'] : "";
     return Comment(id: id, createdTime: createdTime, message: message);
+  }
+}
+
+class Video {
+  final String source;
+  final int height;
+  final int width;
+  final String imageUrl;
+  Video({this.source, this.height, this.width, this.imageUrl});
+
+  factory Video.fromJson(Map<String, dynamic> json) {
+    final String source =
+        json['media']['source'] != null ? json['media']['source'] : null;
+    final int height = json['media']['image'] != null
+        ? json['media']['image']['height']
+        : null;
+    final int width =
+        json['media']['image'] != null ? json['media']['image']['width'] : null;
+    final imageUrl =
+        json['media']['image'] != null ? json['media']['image']['src'] : null;
+    return Video(
+        source: source, height: height, width: width, imageUrl: imageUrl);
   }
 }

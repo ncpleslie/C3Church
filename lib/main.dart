@@ -36,7 +36,6 @@ class _ChurchAppState extends State<ChurchApp> {
             'service': (BuildContext context) => ServicesPage(),
             'settings': (BuildContext context) => SettingsPage(),
             'location': (BuildContext context) => LocationPage(),
-            'posts': (BuildContext context) => PostPage(),
           },
           onGenerateRoute: (RouteSettings settings) {
             return CupertinoPageRoute<bool>(

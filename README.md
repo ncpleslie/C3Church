@@ -23,6 +23,8 @@
 - [x] Update Calendar events on logout
 - [x] Refresh events/podcasts on tap or pulldown
 - [ ] Livestream videos with notification /w own tab
+- [x] Add video playback support for Android
+- [ ] Add video playback support for iOS
 - [ ] Integrate YouTube channel
 - [ ] Infoodle email tab
 - [ ] Split podcasts by location
@@ -49,7 +51,7 @@
 - [x] Simplify arrow icon, remove outline
 - [x] More concise ability to know if video
 - [x] Link to video
-- [ ] Play the video/embed
+- [x] Play the video/embed
 
 #### Facebook login
 - [x] Replace fb icon with fb icon found on location page

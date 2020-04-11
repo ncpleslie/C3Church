@@ -150,7 +150,7 @@ mixin PostModel on ConnectedModel {
           .toList();
     } catch (e, stack) {
       throw Exception(
-          "Tried fetching posts.\n$e was declared.\nTrace: $stack.\nToken status: ${token != null}");
+          "Tried fetching posts.\n$e.\nTrace: $stack.\nToken status: ${token != null}");
     }
   }
 }

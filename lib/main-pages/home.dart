@@ -151,7 +151,7 @@ class _HomePageState extends State<HomePage> {
           story: _posts[index].story,
           statusType: _posts[index].statusType,
           comments: _posts[index].comments,
-          commentCount: _posts[index].comments.length,
+          video: _posts[index].video,
         );
       },
     );
