@@ -47,7 +47,7 @@ class _PostPageState extends State<PostPage> {
 
   _buildPlaceholderImage() {
     return Center(
-      child: CircularProgressIndicator(),
+      child: LinearProgressIndicator(),
     );
   }
 
@@ -133,7 +133,7 @@ class _PostPageState extends State<PostPage> {
                     alignment: Alignment.center,
                     fit: BoxFit.contain,
                     placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(),
+                      child: LinearProgressIndicator(),
                     ),
                     errorWidget: (context, url, error) => Center(
                       child: Center(

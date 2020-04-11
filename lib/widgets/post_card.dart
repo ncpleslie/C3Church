@@ -74,7 +74,7 @@ class PostCard extends StatelessWidget {
                     child: CachedNetworkImage(
                         fit: BoxFit.fill,
                         placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(),
+                              child: LinearProgressIndicator(),
                             ),
                         errorWidget: (context, url, error) => Center(
                               child: Center(

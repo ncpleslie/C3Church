@@ -37,14 +37,14 @@ mixin ConnectedModel on Model {
 
   String get token {
     if (_user != null && _user.token != null) {
-      // if (_user.expiryDate != null &&
-      //     _user.expiryDate.isAfter(DateTime.now()) &&
-      //     _user.token != null) {
-      _isLoggedIn.add(true);
-      return _user.token;
-      // }
-      // _isLoggedIn.add(false);
-      // return null;
+      if (_user.expiryDate != null &&
+          _user.expiryDate.isAfter(DateTime.now()) &&
+          _user.token != null) {
+        _isLoggedIn.add(true);
+        return _user.token;
+      }
+      _isLoggedIn.add(false);
+      return null;
     }
     _isLoggedIn.add(false);
     return null;
@@ -253,10 +253,15 @@ mixin Auth on ConnectedModel {
       final result = await _auth.logIn(['email']);
       switch (result.status) {
         case FacebookLoginStatus.loggedIn:
+          final bool isNonExpiringToken =
+              result.accessToken.expires.millisecondsSinceEpoch == -1;
+
           _user = FacebookUser(
               userId: result.accessToken.userId,
               token: result.accessToken.token,
-              expiryDate: result.accessToken.expires);
+              expiryDate: isNonExpiringToken
+                  ? DateTime.now().add(Duration(days: 60))
+                  : result.accessToken.expires);
           _storePrefs();
           _isLoggedIn.add(true);
           break;

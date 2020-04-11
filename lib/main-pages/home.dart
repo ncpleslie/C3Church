@@ -126,9 +126,12 @@ class _HomePageState extends State<HomePage> {
           }
           return _buildListView();
         } else if (snapshot.hasError) {
-          return Error(snapshot.error.toString());
+          // TODO Remove Print
+          print(snapshot.error.toString());
+          return Error(
+              "Oops! An error has occured. This shouldn't happen. Try refreshing the app.");
         }
-        return Center(child: CircularProgressIndicator());
+        return Center(child: LinearProgressIndicator());
       },
     );
   }
