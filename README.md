@@ -16,6 +16,7 @@
 - [x] Style blog posts
 - [x] Style Facebook Login button
 - [x] Store access token
+- [ ] Fix issue with token expiry
 
 ## Later Sprints
 

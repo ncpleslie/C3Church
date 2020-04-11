@@ -106,7 +106,7 @@ class PostPage extends StatelessWidget {
   Widget _buildTitle(BuildContext context, MainModel model, Post args) {
     return ListTile(
       title: Text(
-        timeago.format(DateTime.parse(args.createdTime)),
+        timeago.format(args.createdTime),
         style: Theme.of(context).textTheme.subtitle2,
       ),
       subtitle: args.message.length != 0
@@ -135,8 +135,7 @@ class PostPage extends StatelessWidget {
                 style: Theme.of(context).textTheme.headline4,
               ),
               subtitle: Text(
-                timeago
-                    .format(DateTime.parse(args.comments[index].createdTime)),
+                timeago.format(args.comments[index].createdTime),
                 style: Theme.of(context).textTheme.subtitle2,
               ),
             ),

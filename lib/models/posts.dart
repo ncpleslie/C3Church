@@ -3,7 +3,7 @@ import 'package:timezone/standalone.dart';
 
 class Post {
   final String id;
-  final String createdTime;
+  final DateTime createdTime;
   final String picture;
   final String fullPicture;
   final String message;
@@ -26,10 +26,9 @@ class Post {
   factory Post.fromJson(Map<String, dynamic> json, Location location) {
     final String id = json['id'] != null ? json['id'] : "NoID";
 
-    final String createdTime = json['created_time'] != null
-        ? DateFormat('kk:mm - dd-MM-yyyy').format(
-            TZDateTime.from(DateTime.parse(json['created_time']), location))
-        : "";
+    final DateTime createdTime = json['created_time'] != null
+        ? TZDateTime.from(DateTime.parse(json['created_time']), location)
+        : null;
 
     final String picture = json['picture'] != null ? json['picture'] : null;
     final String fullPicture =
@@ -67,16 +66,15 @@ class Post {
 
 class Comment {
   final String id;
-  final String createdTime;
+  final DateTime createdTime;
   final String message;
   Comment({this.id, this.createdTime, this.message});
 
   factory Comment.fromJson(Map<String, dynamic> json, Location location) {
     final String id = json['id'] != null ? json['id'] : 'NoID';
-    final String createdTime = json['created_time'] != null
-        ? DateFormat('kk:mm - dd-MM-yyyy').format(
-            TZDateTime.from(DateTime.parse(json['created_time']), location))
-        : "";
+    final DateTime createdTime = json['created_time'] != null
+        ? TZDateTime.from(DateTime.parse(json['created_time']), location)
+        : null;
     final String message = json['message'] != null ? json['message'] : "";
     return Comment(id: id, createdTime: createdTime, message: message);
   }

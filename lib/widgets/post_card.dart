@@ -9,7 +9,7 @@ import '../models/posts.dart';
 class PostCard extends StatelessWidget {
   final MainModel model;
   final String id;
-  final String createdTime;
+  final DateTime createdTime;
   final String imgUrl;
   final String fullImgUrl;
   final String message;
@@ -108,7 +108,7 @@ class PostCard extends StatelessWidget {
       title: Padding(
         padding: EdgeInsets.fromLTRB(0.0, 0.0, 0, 0.0),
         child: Text(
-          timeago.format(DateTime.parse(createdTime)),
+          timeago.format(createdTime),
           style: Theme.of(model.context).textTheme.subtitle2,
         ),
       ),

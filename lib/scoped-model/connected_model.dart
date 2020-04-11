@@ -35,15 +35,15 @@ mixin ConnectedModel on Model {
   FacebookUser _user;
 
   String get token {
-    if (_user != null) {
-      if (_user.expiryDate != null &&
-          _user.expiryDate.isAfter(DateTime.now()) &&
-          _user.token != null) {
-        _isLoggedIn.add(true);
-        return _user.token;
-      }
-      _isLoggedIn.add(false);
-      return null;
+    if (_user != null && _user.token != null) {
+      // if (_user.expiryDate != null &&
+      //     _user.expiryDate.isAfter(DateTime.now()) &&
+      //     _user.token != null) {
+      _isLoggedIn.add(true);
+      return _user.token;
+      // }
+      // _isLoggedIn.add(false);
+      // return null;
     }
     _isLoggedIn.add(false);
     return null;
@@ -243,10 +243,13 @@ mixin Auth on ConnectedModel {
 
   Future login() async {
     _startFunction();
+    if (await _auth.isLoggedIn) {
+      _isLoggedIn.add(true);
+      return;
+    }
 
     try {
       final result = await _auth.logIn(['email']);
-
       switch (result.status) {
         case FacebookLoginStatus.loggedIn:
           _user = FacebookUser(
@@ -260,6 +263,7 @@ mixin Auth on ConnectedModel {
           print("Cancelled");
           break;
         case FacebookLoginStatus.error:
+          print("Error found: ${result.errorMessage}");
           throw Exception(
               'An error occured during the login process\nHere\'s what Facebook gave us: ${result.errorMessage}');
           break;
@@ -271,8 +275,12 @@ mixin Auth on ConnectedModel {
   }
 
   Future<void> _storePrefs() async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString('userData', _user.toJson());
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      prefs.setString('userData', _user.toJson());
+    } catch (error) {
+      throw Exception("Failed storing user token");
+    }
   }
 
   Future<void> logout() async {
