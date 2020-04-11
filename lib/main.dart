@@ -6,7 +6,6 @@ import 'package:scoped_model/scoped_model.dart';
 
 import './navigation.dart';
 import './secondary-pages/services.dart';
-import './secondary-pages/posts.dart';
 import './scoped-model/main.dart';
 import './main-pages/settings.dart';
 import './main-pages/location.dart';

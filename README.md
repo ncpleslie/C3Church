@@ -20,6 +20,7 @@
 
 ## Later Sprints
 
+- [ ] Upgrade Facebook SDK w/ https://medium.com/@karlwhiteprivate/flutter-facebook-sign-in-with-firebase-in-2020-66556a8c3586
 - [x] Update Calendar events on logout
 - [x] Refresh events/podcasts on tap or pulldown
 - [ ] Livestream videos with notification /w own tab
@@ -46,6 +47,7 @@
 - [x] Make titles smaller
 - [x] Text continues on dropdown
 - [x] Change images to squares
+- [x] Square off ExpandTile
 
 #### Posts
 - [x] Simplify arrow icon, remove outline

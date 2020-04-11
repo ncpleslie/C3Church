@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 
 import '../scoped-model/main.dart';
 import '../globals/app_data.dart';

@@ -36,7 +36,9 @@ dependencies:
   cloud_firestore: ^0.12.9+5
   firebase_messaging: ^6.0.13
   overlay_support: ^1.0.3
-  flutter_facebook_login: ^3.0.0
+  flutter_facebook_login:
+    git:
+      url: https://github.com/roughike/flutter_facebook_login.git
   shared_preferences: ^0.5.6+3
   flutter_auth_buttons: ^0.8.0
   liquid_pull_to_refresh: ^1.1.2

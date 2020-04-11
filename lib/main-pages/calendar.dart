@@ -18,8 +18,6 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  final GlobalKey<ScaffoldState> _calendarScaffoldKey =
-      GlobalKey<ScaffoldState>();
   List<dynamic> _events;
   MainModel _model;
   Future _calendarFuture;
@@ -53,7 +51,6 @@ class _CalendarPageState extends State<CalendarPage> {
           },
         );
         return Scaffold(
-          key: _calendarScaffoldKey,
           backgroundColor: Theme.of(context).backgroundColor,
           body: SafeArea(
               top: true,
@@ -101,7 +98,7 @@ class _CalendarPageState extends State<CalendarPage> {
       child: ListView.builder(
         itemCount: _events != null ? _events.length : 0,
         itemBuilder: (BuildContext context, int index) {
-          return CalendarEvents(_events[index], _calendarScaffoldKey, _model);
+          return CalendarEvents(_events[index], _model);
         },
       ),
     );

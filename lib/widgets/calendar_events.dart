@@ -2,29 +2,28 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:add_2_calendar/add_2_calendar.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:overlay_support/overlay_support.dart';
 
 import '../models/calendar_events.dart';
 import '../scoped-model/main.dart';
+import '../widgets/notification_card.dart';
 
 class CalendarEvents extends StatefulWidget {
   final MainModel model;
   final CalendarEvent data;
-  final GlobalKey<ScaffoldState> _scaffoldKey;
-  CalendarEvents(this.data, this._scaffoldKey, this.model);
+  CalendarEvents(this.data, this.model);
   @override
   State<StatefulWidget> createState() {
-    return _CalendarEventsState(data, _scaffoldKey, model);
+    return _CalendarEventsState(data, model);
   }
 }
 
 class _CalendarEventsState extends State<CalendarEvents> {
   final MainModel model;
   final CalendarEvent data;
-  final GlobalKey<ScaffoldState> _scaffoldKey;
-  _CalendarEventsState(this.data, this._scaffoldKey, this.model);
+  _CalendarEventsState(this.data, this.model);
 
   @override
   Widget build(BuildContext context) {
@@ -174,14 +173,19 @@ class _CalendarEventsState extends State<CalendarEvents> {
       endDate: data.endTime,
     );
     Add2Calendar.addEvent2Cal(event).then((success) {
-      Future.delayed(Duration(seconds: 1), () => _displaySuccessPopup(success));
+      Future.delayed(
+          Duration(seconds: 1), () => _showInAppNotification(success, 5000));
     });
   }
 
-  _displaySuccessPopup(success) {
-    return _scaffoldKey.currentState.showSnackBar(SnackBar(
-      content: Text('Successfully Added Event'),
-      duration: Duration(seconds: 2),
-    ));
+  void _showInAppNotification(bool success, int length) {
+    showOverlayNotification((context) {
+      return NotificationCard(
+        context: context,
+        title: "Adding event to Calendar",
+        message: success ? "Successfully added event" : "Failed to add event",
+        callback: OverlaySupportEntry.of(context).dismiss,
+      );
+    }, duration: Duration(milliseconds: length));
   }
 }

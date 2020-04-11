@@ -25,31 +25,32 @@ class _PodcastTileState extends State<PodcastTile> {
   }
 
   Widget _buildStack() {
-    return Container(
-      child: Stack(
-        children: <Widget>[_buildPodcastTile(), _buildImage()],
+    return Card(
+      elevation: 0,
+      margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
+      child: Container(
+        decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
+        child: Stack(
+          children: <Widget>[_buildPodcastTile(), _buildImage()],
+        ),
       ),
     );
   }
 
   Widget _buildImage() {
-    return Positioned(
-      top: 5.0,
-      left: 5.0,
-      child: Container(
-        height: 70.0,
-        width: 70.0,
-        child: CachedNetworkImage(
-          placeholder: (context, url) => Center(
-            child: CircularProgressIndicator(),
-          ),
-          errorWidget: (context, url, error) => Center(
-            child: Center(
-              child: Icon(Icons.error),
-            ),
-          ),
-          imageUrl: data.image,
+    return Container(
+      height: 70.0,
+      width: 70.0,
+      child: CachedNetworkImage(
+        placeholder: (context, url) => Center(
+          child: CircularProgressIndicator(),
         ),
+        errorWidget: (context, url, error) => Center(
+          child: Center(
+            child: Icon(Icons.error),
+          ),
+        ),
+        imageUrl: data.image,
       ),
     );
   }
@@ -57,65 +58,54 @@ class _PodcastTileState extends State<PodcastTile> {
   bool _open = false;
 
   Widget _buildPodcastTile() {
-    return Positioned(
-      child: Card(
-        elevation: 0,
-        margin: EdgeInsets.fromLTRB(5.0, 5.0, 5.0, 0.0),
-        child: Container(
-          margin: EdgeInsets.fromLTRB(0.0, 2.5, 0.0, 7.5),
-          decoration: BoxDecoration(color: Theme.of(model.context).cardColor),
-          child: ExpansionTile(
-              onExpansionChanged: ((status) => {
-                    setState(() {
-                      _open = status;
-                    })
-                  }),
-              title: Padding(
-                padding: EdgeInsets.fromLTRB(70.0, 5.0, 0, 5.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(
-                      data.title != null ? data.title : "Title failed to load",
-                      style: Theme.of(model.context).textTheme.headline4,
-                      maxLines: _open ? 4 : 1,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    Text(
-                      data.date != null ? data.date : "Date failed to load",
-                      style: Theme.of(model.context).textTheme.subtitle2,
-                    )
-                  ],
-                ),
-              ),
-              children: <Widget>[
-                ListTile(
-                  subtitle: Padding(
-                    padding: EdgeInsets.fromLTRB(70.0, 10.0, 0, 0.0),
-                    child: Text(
-                      data.summary != null
-                          ? data.summary
-                          : "Summary failed to load",
-                      style: Theme.of(model.context).textTheme.subtitle2,
-                    ),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.all(12.0),
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Theme.of(model.context).accentColor),
-                  child: IconButton(
-                    iconSize: 30.0,
-                    icon: Icon(Icons.play_circle_outline),
-                    color: Theme.of(model.context).primaryColor,
-                    onPressed: () => model.website(website: data.link),
-                  ),
-                ),
-              ]),
+    return ExpansionTile(
+      onExpansionChanged: ((status) => {
+            setState(() {
+              _open = status;
+            })
+          }),
+      title: Padding(
+        padding: EdgeInsets.fromLTRB(70.0, 5.0, 0, 5.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              data.title != null ? data.title : "Title failed to load",
+              style: Theme.of(model.context).textTheme.headline4,
+              maxLines: _open ? 4 : 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+            Text(
+              data.date != null ? data.date : "Date failed to load",
+              style: Theme.of(model.context).textTheme.subtitle2,
+            )
+          ],
         ),
       ),
+      children: <Widget>[
+        ListTile(
+          subtitle: Padding(
+            padding: EdgeInsets.fromLTRB(70.0, 10.0, 0, 0.0),
+            child: Text(
+              data.summary != null ? data.summary : "Summary failed to load",
+              style: Theme.of(model.context).textTheme.subtitle2,
+            ),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.all(12.0),
+          decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              color: Theme.of(model.context).accentColor),
+          child: IconButton(
+            iconSize: 30.0,
+            icon: Icon(Icons.play_circle_outline),
+            color: Theme.of(model.context).primaryColor,
+            onPressed: () => model.website(website: data.link),
+          ),
+        ),
+      ],
     );
   }
 }

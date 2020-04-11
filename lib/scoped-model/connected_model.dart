@@ -9,7 +9,8 @@ import 'package:http/http.dart' as http;
 import 'package:xml2json/xml2json.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/standalone.dart';
-import 'package:timezone/src/env.dart';
+// The following package is needed to set timezone
+import 'package:timezone/src/env.dart' as env; // ignore: implementation_imports
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
@@ -83,7 +84,7 @@ mixin ConnectedModel on Model {
   }
 
   _getLocation(List<int> rawData) {
-    initializeDatabase(rawData);
+    env.initializeDatabase(rawData);
     _location = getLocation('Pacific/Auckland');
   }
 }

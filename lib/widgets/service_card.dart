@@ -1,8 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 
-import 'package:cached_network_image/cached_network_image.dart';
-
 import '../scoped-model/main.dart';
 import '../globals/app_data.dart';
 
@@ -31,18 +29,9 @@ class ServiceCard extends StatelessWidget {
               child: Card(
                 elevation: 0,
                 margin: EdgeInsets.all(0.0),
-                child: Stack(
-                  children: <Widget>[
-                    Positioned(
-                      width: MediaQuery.of(context).size.width,
-                      child: Hero(
-                        tag: 'services',
-                        child:
-                            Image.asset(SERVICE_IMG_URL, fit: BoxFit.fitHeight),
-                      ),
-                    ),
-                    // _buildOverlay()
-                  ],
+                child: Hero(
+                  tag: 'services',
+                  child: Image.asset(SERVICE_IMG_URL, fit: BoxFit.fitHeight),
                 ),
               ),
             ),
@@ -73,17 +62,6 @@ class ServiceCard extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildOverlay() {
-    return Positioned(
-      child: Container(
-        alignment: Alignment.topCenter,
-        child: Text('Service',
-            textScaleFactor: 2,
-            style: Theme.of(model.context).textTheme.headline5),
       ),
     );
   }
