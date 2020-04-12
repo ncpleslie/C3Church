@@ -46,6 +46,5 @@ lib/globals/churchapp-2a503d5743b8.json
 lib/globals/globals.dart
 .metadata
 pubspec.lock
-ios/
 android/app/google-services.json
 google-services.json
