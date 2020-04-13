@@ -31,8 +31,8 @@ dependencies:
   material_design_icons_flutter: ^4.0.5045
   url_launcher: ^5.0.1
   fancy_bottom_navigation: ^0.3.2
-  firebase_core: ^0.4.0+9
-  firebase_auth: ^0.14.0+5
+  firebase_core: ^0.4.4+3
+  firebase_auth: ^0.15.5+3
   cloud_firestore: ^0.12.9+5
   firebase_messaging: ^6.0.13
   overlay_support: ^1.0.3

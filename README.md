@@ -2,14 +2,21 @@
 
 ## Todo
 
+## Android
 - [x] Android notifications
-- [ ] iOS notifications
 - [x] Change notification icon - Android
+- [x] Add splash screen - Android
+- [x] Add video playback support for Android
+
+## iOS
+- [ ] iOS notifications - Need Dev account
+- [ ] Add splash screen - iOS
+- [x] Add video playback support for iOS
+
+## Cross Platform
 - [x] Create ListView on blog posts on home screen
 - [x] Prevent past calendar events from showing
 - [x] Widget to display lack of events/podcasts
-- [x] Add splash screen - Android
-- [ ] Add splash screen - iOS
 - [X] Facebook API Access
 - [x] Migrate from Google Calendars to Facebook events
 - [x] Facebook blog/posts on front page
@@ -17,15 +24,10 @@
 - [x] Style Facebook Login button
 - [x] Store access token
 - [x] Fix issue with token non-expiring tokens
-
-## Later Sprints
-
-- [ ] Upgrade Facebook SDK w/ https://medium.com/@karlwhiteprivate/flutter-facebook-sign-in-with-firebase-in-2020-66556a8c3586
 - [x] Update Calendar events on logout
 - [x] Refresh events/podcasts on tap or pulldown
+- [ ] Upgrade Facebook SDK w/ https://medium.com/@karlwhiteprivate/flutter-facebook-sign-in-with-firebase-in-2020-66556a8c3586
 - [ ] Livestream videos with notification /w own tab
-- [x] Add video playback support for Android
-- [ ] Add video playback support for iOS
 - [ ] Integrate YouTube channel
 - [ ] Infoodle email tab
 - [ ] Split podcasts by location

@@ -164,7 +164,7 @@ class _CalendarEventsState extends State<CalendarEvents> {
     return returningMap;
   }
 
-  _addEventToDeviceCalendar() {
+  _addEventToDeviceCalendar() async {
     final Event event = Event(
       title: data.eventTitle,
       description: data.summary,
@@ -172,10 +172,13 @@ class _CalendarEventsState extends State<CalendarEvents> {
       startDate: data.startTime,
       endDate: data.endTime,
     );
-    Add2Calendar.addEvent2Cal(event).then((success) {
+    if (await Add2Calendar.addEvent2Cal(event)) {
       Future.delayed(
-          Duration(seconds: 1), () => _showInAppNotification(success, 5000));
-    });
+          Duration(seconds: 1), () => _showInAppNotification(true, 5000));
+    } else {
+      Future.delayed(
+          Duration(seconds: 1), () => _showInAppNotification(false, 5000));
+    }
   }
 
   void _showInAppNotification(bool success, int length) {

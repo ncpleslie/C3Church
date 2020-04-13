@@ -46,8 +46,11 @@ class _PostPageState extends State<PostPage> {
   }
 
   _buildPlaceholderImage() {
-    return Center(
-      child: LinearProgressIndicator(),
+    return Align(
+      alignment: FractionalOffset.center,
+      child: Center(
+        child: LinearProgressIndicator(),
+      ),
     );
   }
 
@@ -119,7 +122,7 @@ class _PostPageState extends State<PostPage> {
   }
 
   Widget _buildPicture(BuildContext context, MainModel model) {
-    return post.fullPicture != null
+    return post.fullPicture != null && post.video == null
         ? Container(
             height: MediaQuery.of(context).size.height / 2.5,
             child: Card(
