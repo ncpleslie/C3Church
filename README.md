@@ -10,7 +10,8 @@
 
 ## iOS
 - [ ] iOS notifications - Need Dev account
-- [ ] Add splash screen - iOS
+- [x] Add splash screen - iOS
+- [ ] Set splash screen elements to corrent sizes
 - [x] Add video playback support for iOS
 
 ## Cross Platform
@@ -31,6 +32,7 @@
 - [ ] Integrate YouTube channel
 - [ ] Infoodle email tab
 - [ ] Split podcasts by location
+- [ ] Refresh/Pulldown-to-refresh if error three pages
 
 
 ### Styling
