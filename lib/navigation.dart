@@ -40,7 +40,7 @@ class _NavigationState extends State<Navigation> with TickerProviderStateMixin {
         _model = model;
         model.context = context;
         return Scaffold(
-          body: _getPage(),
+          body: SafeArea(bottom: true, top: true, child: _getPage(),), 
           bottomNavigationBar: _createBottomNavBar(),
         );
       },
