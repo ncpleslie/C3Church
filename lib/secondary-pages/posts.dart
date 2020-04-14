@@ -49,7 +49,7 @@ class _PostPageState extends State<PostPage> {
     return Align(
       alignment: FractionalOffset.center,
       child: Center(
-        child: LinearProgressIndicator(),
+        child: CircularProgressIndicator(),
       ),
     );
   }
