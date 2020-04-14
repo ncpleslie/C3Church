@@ -34,8 +34,15 @@ const String GOOGLE_MAP_URL = 'https://goo.gl/maps/YdgaWWT8NCo';
 const String APPLE_MAP_URL = 'https://maps.apple.com/?sll=$LAT,$LON';
 
 // Misc App information
+const String PRIVACY_POLICY_URL =
+    "https://ncpleslie.github.io/C3Church/privacy_policy.html";
+
+const String TERMS_OF_SERVICE_URL =
+    "https://ncpleslie.github.io/C3Church/terms_of_service.html";
+
 const String PRIVACY_POLICY =
-    'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, Firebase, and PodBean. C3 Eastside or the App Developer have no connection with these service providers.';
+    'C3 Church Eastside and the App Developer do not collect personal information. No data is stored by C3 Eastside or the App Developer. This app does/will make connections to external services for retrieval of relevant data. These services are, but not limited to, Google, Firebase, Facebook, and PodBean. C3 Eastside or the App Developer have no connection with these service providers. For more information please see ' +
+        PRIVACY_POLICY_URL;
 
 // Misc images
 const String SERVICE_IMG_URL = 'assets/header.jpg';
