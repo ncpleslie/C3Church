@@ -28,6 +28,7 @@ class _ChurchAppState extends State<ChurchApp> {
       child: ScopedModel<MainModel>(
         model: MainModel(),
         child: MaterialApp(
+          debugShowCheckedModeBanner: false,
           title: APP_NAME,
           theme: themeData,
           routes: <String, WidgetBuilder>{
