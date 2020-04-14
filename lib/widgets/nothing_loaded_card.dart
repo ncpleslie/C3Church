@@ -4,8 +4,8 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 class NothingLoadedCard extends StatelessWidget {
   final String title;
   final String subtitle;
-  final Function callback;
-  NothingLoadedCard({this.title, this.subtitle, this.callback});
+  final Function onPressed;
+  NothingLoadedCard({this.title, this.subtitle, this.onPressed});
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class NothingLoadedCard extends StatelessWidget {
             style: Theme.of(context).textTheme.subtitle2,
           ),
           trailing: IconButton(
-              icon: Icon(Icons.refresh), onPressed: () => callback()),
+              icon: Icon(Icons.refresh), onPressed: () => onPressed()),
         ),
       ),
     );

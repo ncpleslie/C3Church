@@ -7,9 +7,8 @@ import '../widgets/service_card.dart';
 import '../widgets/post_card.dart';
 import '../themes/style.dart';
 import '../globals/app_data.dart';
-import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
-import '../widgets/error.dart';
+import '../widgets/future_list_view.dart';
 
 class HomePage extends StatefulWidget {
   @override
@@ -19,67 +18,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  List<dynamic> _posts;
   MainModel _model;
-  Future _postFuture;
   bool _loggedIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _model = ScopedModel.of(context);
-    if (_loggedIn) {
-      _postFuture = _model.getPosts();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            appLogo,
-            SizedBox(
-              width: 10,
-            ),
-            Text(
-              APP_NAME,
-              style: Theme.of(context).textTheme.headline6,
-            ),
-          ],
-        ),
-        centerTitle: true,
-        backgroundColor: Theme.of(context).cardColor,
-        elevation: 0,
-        actions: <Widget>[
-          IconButton(
-              icon: Icon(
-                Icons.settings,
-                color: Theme.of(context).primaryColor,
-              ),
-              onPressed: () => Navigator.pushNamed(context, 'settings')
-              //.then((_) => _autoLoginProcess()),
-              )
-        ],
-      ),
+      appBar: _buildAppBar(),
       backgroundColor: Theme.of(context).backgroundColor,
       body: ScopedModelDescendant(
         builder: (BuildContext context, Widget child, MainModel model) {
           _model = model;
-          _model.isLoggedIn.listen(
-            (data) {
-              if (data != _loggedIn && mounted) {
-                setState(() {
-                  _loggedIn = data;
-                });
-                if (_loggedIn) {
-                  _postFuture = _model.getPosts();
-                }
-              }
-            },
-          );
+          _checkLoggedInState();
           return _buildLoggedInLoggedOutListView();
         },
       ),
@@ -92,85 +42,96 @@ class _HomePageState extends State<HomePage> {
             showChildOpacityTransition: false,
             color: Theme.of(context).cardColor,
             backgroundColor: Theme.of(context).accentColor,
-            onRefresh: _refresh,
+            onRefresh: _model.updatePosts,
             child: ListView(
               children: <Widget>[
                 ServiceCard(_model),
-                _loggedIn
-                    ? _buildFutureListView(context)
-                    : FacebookLoginButton(_initLoginProcess)
+                FutureListView(
+                    onLoad: _model.getPosts,
+                    onUpdate: _model.updatePosts,
+                    listView: _buildListView,
+                    type: 'posts'),
               ],
             ),
           )
         : ListView(
-            children: <Widget>[
-              ServiceCard(_model),
-              _loggedIn
-                  ? _buildFutureListView(context)
-                  : FacebookLoginButton(_initLoginProcess)
-            ],
+            children: <Widget>[ServiceCard(_model), FacebookLoginButton()],
           );
   }
 
-  Widget _buildFutureListView(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: _postFuture,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          _posts = snapshot.data;
-          if (_posts == null || _posts.length == 0) {
-            return NothingLoadedCard(
-                title: "No Posts",
-                subtitle: "It seems like there are no posts. Strange...",
-                callback: _refresh);
-          }
-          return _buildListView();
-        } else if (snapshot.hasError) {
-          // TODO Remove Print
-          print(snapshot.error.toString());
-          return Error(
-              "Oops! An error has occured. This shouldn't happen. Try refreshing the app.");
-        }
-        return Center(child: LinearProgressIndicator());
-      },
-    );
-  }
-
-  ListView _buildListView() {
+  ListView _buildListView(List<dynamic> posts) {
     return ListView.builder(
       padding: EdgeInsets.symmetric(vertical: 10),
       shrinkWrap: true,
       physics: ScrollPhysics(),
-      itemCount: _posts != null ? _posts.length : 0,
+      itemCount: posts != null ? posts.length : 0,
       itemBuilder: (BuildContext context, int index) {
         return PostCard(
           model: _model,
-          id: _posts[index].id,
-          imgUrl: _posts[index].picture,
-          fullImgUrl: _posts[index].fullPicture,
-          message: _posts[index].message,
-          createdTime: _posts[index].createdTime,
-          link: _posts[index].link,
-          story: _posts[index].story,
-          statusType: _posts[index].statusType,
-          comments: _posts[index].comments,
-          video: _posts[index].video,
+          id: posts[index].id,
+          imgUrl: posts[index].picture,
+          fullImgUrl: posts[index].fullPicture,
+          message: posts[index].message,
+          createdTime: posts[index].createdTime,
+          link: posts[index].link,
+          story: posts[index].story,
+          statusType: posts[index].statusType,
+          comments: posts[index].comments,
+          video: posts[index].video,
         );
       },
     );
   }
 
-  Future _refresh() {
-    if (_loggedIn) {
-      _postFuture = _model.getPosts();
-      return _postFuture;
-    }
-    return null;
+  Widget _buildTitleBar() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: <Widget>[
+        appLogo,
+        SizedBox(
+          width: 10,
+        ),
+        Text(
+          APP_NAME,
+          style: Theme.of(context).textTheme.headline6,
+        ),
+      ],
+    );
   }
 
-  void _initLoginProcess() {
-    _postFuture = null;
-    _loggedIn = false;
-    _model.login();
+  List<Widget> _buildActionButton() {
+    return <Widget>[
+      IconButton(
+        icon: Icon(
+          Icons.settings,
+          color: Theme.of(context).primaryColor,
+        ),
+        onPressed: () => Navigator.pushNamed(context, 'settings'),
+      )
+    ];
+  }
+
+  Widget _buildAppBar() {
+    return AppBar(
+      title: _buildTitleBar(),
+      centerTitle: true,
+      backgroundColor: Theme.of(context).cardColor,
+      elevation: 0,
+      actions: _buildActionButton(),
+    );
+  }
+
+  void _checkLoggedInState() {
+    _model.isLoggedIn.listen(
+      (data) {
+        if (data != _loggedIn && mounted) {
+          setState(
+            () {
+              _loggedIn = data;
+            },
+          );
+        }
+      },
+    );
   }
 }

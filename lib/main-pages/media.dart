@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
@@ -18,16 +16,7 @@ class MediaPage extends StatefulWidget {
 }
 
 class _MediaPageState extends State<MediaPage> {
-  List<Podcast> _podcasts;
   MainModel _model;
-  Future _podcastFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _model = ScopedModel.of(context);
-    _podcastFuture = _model.getPodcasts();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -45,45 +34,45 @@ class _MediaPageState extends State<MediaPage> {
     );
   }
 
-  LiquidPullToRefresh _buildListView() {
-    return LiquidPullToRefresh(
-      showChildOpacityTransition: false,
-      onRefresh: _refresh,
-      child: ListView.builder(
-        itemCount: _podcasts != null ? _podcasts.length : 0,
-        itemBuilder: (BuildContext context, int index) {
-          return PodcastTile(_podcasts[index], _model);
-        },
-      ),
-    );
-  }
-
   Widget _buildFutureListView(BuildContext context) {
     return FutureBuilder<List<Podcast>>(
-      future: _podcastFuture,
+      future: _model.getPodcasts(),
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         if (snapshot.hasData) {
-          _podcasts = snapshot.data;
-          if (_podcasts == null || _podcasts.length == 0) {
+          // If can't find podcasts then display an error card
+          // giving the user the option to refresh
+          if (snapshot.data == null || snapshot.data.length == 0) {
             return NothingLoadedCard(
                 title: "No Podcasts",
                 subtitle: "It seems like there are no podcasts. Strange...",
-                callback: _refresh);
+                onPressed: _model.updatePodcasts);
           }
-          return _buildListView();
+          // Display the podcast tiles
+          return _buildListView(snapshot.data);
         } else if (snapshot.hasError) {
-          // TODO Remove Print
-          print(snapshot.error.toString());
+          // If error, for whatever reason, display an error widget
+          // with ability for user to refresh
           return Error(
-              "Oops! An error has occured. This shouldn't happen. Try refreshing the app.");
+            onPressed: _model.updatePodcasts,
+            errorStatement: snapshot.error.toString(),
+          );
         }
+        // Show progress bar by default
         return Center(child: LinearProgressIndicator());
       },
     );
   }
 
-  Future _refresh() {
-    _podcastFuture = _model.getPodcasts();
-    return _podcastFuture;
+  LiquidPullToRefresh _buildListView(List<Podcast> podcasts) {
+    return LiquidPullToRefresh(
+      showChildOpacityTransition: false,
+      onRefresh: _model.updatePodcasts,
+      child: ListView.builder(
+        itemCount: podcasts != null ? podcasts.length : 0,
+        itemBuilder: (BuildContext context, int index) {
+          return PodcastTile(podcasts[index], _model);
+        },
+      ),
+    );
   }
 }

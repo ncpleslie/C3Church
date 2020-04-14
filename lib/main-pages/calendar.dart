@@ -1,14 +1,11 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 import 'package:scoped_model/scoped_model.dart';
 
 import '../widgets/calendar_events.dart';
 import '../scoped-model/main.dart';
-import '../widgets/nothing_loaded_card.dart';
 import '../widgets/facebook_login_button.dart';
-import '../widgets/error.dart';
+import '../widgets/future_list_view.dart';
 
 class CalendarPage extends StatefulWidget {
   @override
@@ -18,98 +15,56 @@ class CalendarPage extends StatefulWidget {
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  List<dynamic> _events;
   MainModel _model;
-  Future _calendarFuture;
   bool _loggedIn = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _model = ScopedModel.of(context);
-
-    if (_loggedIn) {
-      _calendarFuture = _model.getEvents();
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
     return ScopedModelDescendant(
       builder: (BuildContext context, Widget child, MainModel model) {
         _model = model;
-        _model.isLoggedIn.listen(
-          (data) {
-            if (data != _loggedIn && mounted) {
-              setState(() {
-                _loggedIn = data;
-              });
-              if (_loggedIn) {
-                _calendarFuture = _model.getEvents();
-              }
-            }
-          },
-        );
+        _checkLoggedInState();
         return Scaffold(
           backgroundColor: Theme.of(context).backgroundColor,
           body: SafeArea(
-              top: true,
-              child: _loggedIn
-                  ? _buildFutureListView(context)
-                  : FacebookLoginButton(_initLoginProcess)),
+            top: true,
+            child: _loggedIn
+                ? FutureListView(
+                    onLoad: _model.getEvents,
+                    onUpdate: _model.updateEvents,
+                    listView: _buildListView,
+                    type: 'events')
+                : FacebookLoginButton(),
+          ),
         );
       },
     );
   }
 
-  Widget _buildFutureListView(BuildContext context) {
-    return FutureBuilder<List<dynamic>>(
-      future: _calendarFuture,
-      builder: (BuildContext context, AsyncSnapshot snapshot) {
-        if (snapshot.hasData) {
-          _events = snapshot.data;
-          if (_events == null || _events.length == 0) {
-            return NothingLoadedCard(
-                title: "No Events",
-                subtitle: "It seems like there are no upcoming events",
-                callback: _refresh);
-          }
-          return _buildListView();
-        } else if (snapshot.hasError) {
-          // TODO Remove Print
-          print(snapshot.error.toString());
-          return Error(
-              "Oops! An error has occured. This shouldn't happen. Try refreshing the app.");
-        } else
-          return Center(child: CircularProgressIndicator());
-      },
-    );
-  }
-
-  Future _refresh() {
-    if (_loggedIn) {
-      _calendarFuture = _model.getEvents();
-      return _calendarFuture;
-    }
-    return null;
-  }
-
-  LiquidPullToRefresh _buildListView() {
+  Widget _buildListView(List<dynamic> events) {
     return LiquidPullToRefresh(
       showChildOpacityTransition: false,
-      onRefresh: _refresh,
+      onRefresh: _model.updateEvents,
       child: ListView.builder(
-        itemCount: _events != null ? _events.length : 0,
+        itemCount: events != null ? events.length : 0,
         itemBuilder: (BuildContext context, int index) {
-          return CalendarEvents(_events[index], _model);
+          return CalendarEvents(events[index], _model);
         },
       ),
     );
   }
 
-  void _initLoginProcess() {
-    _calendarFuture = null;
-    _loggedIn = false;
-    _model.login();
+  void _checkLoggedInState() {
+    _model.isLoggedIn.listen(
+      (data) {
+        if (data != _loggedIn && mounted) {
+          setState(
+            () {
+              _loggedIn = data;
+            },
+          );
+        }
+      },
+    );
   }
 }

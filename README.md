@@ -33,6 +33,7 @@
 - [ ] Infoodle email tab
 - [ ] Split podcasts by location
 - [ ] Refresh/Pulldown-to-refresh if error three pages
+- [ ] Trim inputs
 
 
 ### Styling

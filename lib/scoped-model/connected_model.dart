@@ -6,7 +6,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:scoped_model/scoped_model.dart';
 import 'package:http/http.dart' as http;
-import 'package:xml2json/xml2json.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:timezone/standalone.dart';
 // The following package is needed to set timezone
@@ -16,9 +15,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../models/calendar_events.dart';
-import '../models/podcasts.dart';
-import '../models/posts.dart';
 import '../models/facebook_user.dart';
 import '../globals/app_data.dart';
 import '../utils/utils.dart';
@@ -50,17 +46,17 @@ mixin ConnectedModel on Model {
     return null;
   }
 
-  void _startFunction() {
+  void startFunction() {
     _isLoading.add(true);
     notifyListeners();
   }
 
-  void _endFunction() {
+  void endFunction() {
     _isLoading.add(false);
     notifyListeners();
   }
 
-  Future<http.Response> _fetch(String url) async {
+  Future<http.Response> fetch(String url) async {
     _isLoading.add(true);
     notifyListeners();
     final http.Response response = await http.get(url);
@@ -83,76 +79,13 @@ mixin ConnectedModel on Model {
     return byteData.buffer.asUint8List();
   }
 
-  _getLocation(List<int> rawData) {
+  initialiseLocation(List<int> rawData) {
     env.initializeDatabase(rawData);
     _location = getLocation('Pacific/Auckland');
   }
-}
 
-// --------------------------------------------------------------------- //
-mixin PodcastModel on ConnectedModel {
-  final String _podcastURL = PODCAST;
-  int maxNum = 10;
-  Future<List<Podcast>> getPodcasts() async {
-    print('Fetching Podcasts');
-    _startFunction();
-    final http.Response response = await _fetch(_podcastURL);
-    final json = _convertXMLtoJSON(response.body);
-    Iterable list = json['rss']['channel']['item'];
-    _endFunction();
-    return list
-        .map((podcast) => Podcast.fromJson(podcast))
-        .take(maxNum)
-        .toList();
-  }
-
-  dynamic _convertXMLtoJSON(String body) {
-    final Xml2Json xml2json = Xml2Json();
-    xml2json.parse(body);
-    final String jsonData = xml2json.toBadgerfish();
-    return jsonDecode(jsonData);
-  }
-}
-
-// --------------------------------------------------------------------- //
-mixin CalendarModel on ConnectedModel {
-  String pageToken;
-  int maxResults = 30;
-  String orderBy = 'startTime';
-
-  final String _eventUrl = FACEBOOK_EVENT_URL + "&access_token=";
-
-  Future<List<dynamic>> getEvents() async {
-    print('Fetching Calendar Events');
-    _startFunction();
-    // Set Timezone to NZ (only location this app will work)
-    await loadDefaultData().then((rawData) => _getLocation(rawData));
-    final http.Response response = await _fetch(_eventUrl + token);
-    Iterable json = jsonDecode(response.body)['events']['data'];
-    _endFunction();
-    return json
-        .map((event) => CalendarEvent.fromJson(event, _location))
-        .toList();
-  }
-}
-
-// --------------------------------------------------------------------- //
-mixin PostModel on ConnectedModel {
-  final String _postUrl = FACEBOOK_POST_URL + "&access_token=";
-
-  Future<List<dynamic>> getPosts() async {
-    try {
-      print('Fetching Facebook Posts');
-      _startFunction();
-      final http.Response response = await _fetch(_postUrl + token);
-      _endFunction();
-      return jsonDecode(response.body)['posts']['data']
-          .map((post) => Post.fromJson(post, _location))
-          .toList();
-    } catch (e, stack) {
-      throw Exception(
-          "Tried fetching posts.\n$e.\nTrace: $stack.\nToken status: ${token != null}");
-    }
+  get location {
+    return _location;
   }
 }
 
@@ -243,7 +176,7 @@ mixin Auth on ConnectedModel {
   final _auth = FacebookLogin();
 
   Future login() async {
-    _startFunction();
+    startFunction();
     if (await _auth.isLoggedIn) {
       _isLoggedIn.add(true);
       return;
@@ -277,7 +210,7 @@ mixin Auth on ConnectedModel {
     } catch (error) {
       throw Exception(error);
     }
-    _endFunction();
+    endFunction();
   }
 
   Future<void> _storePrefs() async {
@@ -295,11 +228,11 @@ mixin Auth on ConnectedModel {
     prefs.clear();
     _user = null;
     _isLoggedIn.add(false);
-    _endFunction();
+    endFunction();
   }
 
   Future<bool> tryAutoLogin() async {
-    _startFunction();
+    startFunction();
     final prefs = await SharedPreferences.getInstance();
     if (!prefs.containsKey('userData')) {
       _isLoggedIn.add(false);
@@ -311,7 +244,7 @@ mixin Auth on ConnectedModel {
       _isLoggedIn.add(false);
       return false;
     }
-    _endFunction();
+    endFunction();
     _isLoggedIn.add(true);
     return true;
   }
