@@ -52,6 +52,10 @@ const String PODCAST_IMG_URL = 'assets/itunes-thumb.jpg';
 
 // Facebook Graph API url
 
+const String FB_CLIENT_ID = "889295598168370";
+const String FB_REDIRECT_URL =
+    "https://www.facebook.com/connect/login_success.html";
+
 const String FACEBOOK_URL =
     "https://graph.facebook.com/v6.0/eastsidec3?fields=";
 

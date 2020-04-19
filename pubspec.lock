@@ -70,7 +70,7 @@ packages:
       name: collection
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.14.11"
+    version: "1.14.12"
   convert:
     dependency: transitive
     description:
@@ -174,15 +174,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.3"
-  flutter_facebook_login:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: HEAD
-      resolved-ref: dcb28f06a76f3ddc3a18a2e88b6f7dfa88b4ba4d
-      url: "https://github.com/roughike/flutter_facebook_login.git"
-    source: git
-    version: "3.0.0"
   flutter_launcher_icons:
     dependency: "direct dev"
     description:
@@ -195,6 +186,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_webview_plugin:
+    dependency: "direct main"
+    description:
+      name: flutter_webview_plugin
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.3.11"
   http:
     dependency: "direct main"
     description:

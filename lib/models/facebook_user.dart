@@ -24,4 +24,18 @@ class FacebookUser {
         token: json['token'],
         expiryDate: DateTime.parse(json['expiryDate']));
   }
+
+  factory FacebookUser.fromLink(String url) {
+    final String accessToken =
+        url.split("access_token=")[1].split("&")[0].toString();
+    final int expires = int.parse(url.split("expires_in=")[1].split("&")[0]);
+    final bool isNonExpiringToken = expires == -1;
+
+    return FacebookUser(
+        userId: null,
+        token: accessToken,
+        expiryDate: isNonExpiringToken
+            ? DateTime.now().add(Duration(days: 60))
+            : DateTime.now().add(Duration(seconds: expires)));
+  }
 }

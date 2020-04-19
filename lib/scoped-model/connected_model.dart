@@ -12,12 +12,12 @@ import 'package:timezone/standalone.dart';
 import 'package:timezone/src/env.dart' as env; // ignore: implementation_imports
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_facebook_login/flutter_facebook_login.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../models/facebook_user.dart';
 import '../globals/app_data.dart';
 import '../utils/utils.dart';
+import './custom_web_view.dart';
 
 mixin ConnectedModel on Model {
   // Loading Relevant Stuff
@@ -173,42 +173,29 @@ mixin Notifications on ConnectedModel {
 
 // --------------------------------------------------------------------- //
 mixin Auth on ConnectedModel {
-  final _auth = FacebookLogin();
-
   Future login() async {
     startFunction();
-    if (await _auth.isLoggedIn) {
+    if (await tryAutoLogin()) {
       _isLoggedIn.add(true);
       return;
     }
 
     try {
-      final result = await _auth.logIn(['email']);
-      switch (result.status) {
-        case FacebookLoginStatus.loggedIn:
-          final bool isNonExpiringToken =
-              result.accessToken.expires.millisecondsSinceEpoch == -1;
-
-          _user = FacebookUser(
-              userId: result.accessToken.userId,
-              token: result.accessToken.token,
-              expiryDate: isNonExpiringToken
-                  ? DateTime.now().add(Duration(days: 60))
-                  : result.accessToken.expires);
-          _storePrefs();
-          _isLoggedIn.add(true);
-          break;
-        case FacebookLoginStatus.cancelledByUser:
-          print("Cancelled");
-          break;
-        case FacebookLoginStatus.error:
-          print("Error found: ${result.errorMessage}");
-          throw Exception(
-              'An error occured during the login process\nHere\'s what Facebook gave us: ${result.errorMessage}');
-          break;
-      }
+      FacebookUser result = await Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) => CustomWebView(
+                  selectedUrl:
+                      'https://www.facebook.com/dialog/oauth?client_id=$FB_CLIENT_ID&redirect_uri=$FB_REDIRECT_URL&response_type=token&scope=email,public_profile,manage_pages',
+                ),
+            maintainState: true),
+      );
+      _user = result;
+      _storePrefs();
+      _isLoggedIn.add(true);
     } catch (error) {
-      throw Exception(error);
+      throw Exception(
+          'An error occured during the login process\nHere\'s what Facebook gave us: $error');
     }
     endFunction();
   }
@@ -223,7 +210,6 @@ mixin Auth on ConnectedModel {
   }
 
   Future<void> logout() async {
-    await _auth.logOut();
     final prefs = await SharedPreferences.getInstance();
     prefs.clear();
     _user = null;
